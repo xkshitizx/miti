@@ -33,5 +33,4 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
-  spec.add_development_dependency "zeitwerk", "~> 2.6.0"
 end

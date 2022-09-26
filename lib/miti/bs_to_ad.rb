@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "./nepali_date"
 require "date"
 
 module Miti
