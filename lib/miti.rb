@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "miti/version"
-require "zeitwerk"
 require "date"
-
-loader = Zeitwerk::Loader.for_gem
-loader.setup # ready!
+require_relative "miti/ad_to_bs"
+require_relative "miti/bs_to_ad"
+require_relative "miti/nepali_date"
 
 # Base module for the gem
 module Miti

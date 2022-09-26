@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "data/date_data"
+
 module Miti
   # Class for nepali date
   class NepaliDate
