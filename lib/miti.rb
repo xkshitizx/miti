@@ -41,9 +41,10 @@ module Miti
     def parse_nepali_date(nepali_date)
       klass = nepali_date.class.to_s
 
-      if klass == "String"
+      case klass
+      when "String"
         Miti::NepaliDate.parse(nepali_date)
-      elsif klass == "Miti::NepaliDate"
+      when klass == "Miti::NepaliDate"
         nepali_date
       else
         raise "Invalid date format."
