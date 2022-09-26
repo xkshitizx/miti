@@ -26,24 +26,6 @@ module Miti
 
     private
 
-    attr_reader :date
-
-    def parse_month
-      Miti::NepaliDate.months_in_english_font[calculate_year_month_day[:mahina] - 1]
-    end
-
-    def parse_day
-      @date.strftime("%A")
-    end
-
-    def calculate_year_month_day
-      @calculate_year_month_day ||= Miti::AdToBs.new(@date).convert
-    end
-
-    def date?(date)
-      date.match(%r{2022/09/21})
-    end
-
     def parse_english_date(english_date)
       klass = english_date.class.to_s
 
