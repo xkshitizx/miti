@@ -18,7 +18,7 @@ module Miti
     ##
     # Get equivalent tarik(AD) for NepaliDate
     #
-    # return Date
+    # @return [Date]
     def tarik
       @tarik ||= BsToAd.new(self).convert
     end
@@ -26,7 +26,7 @@ module Miti
     ##
     # Get weekday for a nepali date.
     #
-    # returns Integer(0-6) that represents weekdays starting from 0.
+    # @return [Integer](0-6) that represents weekdays starting from 0.
     def bar
       @bar ||= tarik&.wday
     end
@@ -34,7 +34,7 @@ module Miti
     ##
     # returns details of nepali date in a ruby Hash
     #
-    # returns Hash
+    # @return [Hash]
     def to_h
       { barsa: barsa, mahina: mahina, gatey: gatey, bar: bar, tarik: tarik }
     end
@@ -42,9 +42,9 @@ module Miti
     ##
     # Returns Nepali Date in string format(yyyy/mm/dd).
     #
-    # params separator(- by default)
+    # @param separator(- by default)
     #
-    # returns String
+    # @return [String]
     def to_s(seperator = "-")
       return unless [" ", "/", "-"].include?(seperator)
 
@@ -57,7 +57,7 @@ module Miti
     # Descriptive output for current date
     # When nepali flag is true, month is returned in nepali font and week day in Nepali
     #
-    # returns String
+    # @return [String]
     def descriptive(nepali: false)
       month_index = mahina - 1
       if nepali
@@ -96,7 +96,7 @@ module Miti
       ##
       # This method parses date in yyyy/mm/dd to NepaliDate object
       #
-      # returns Miti::NepaliDate
+      # @return [Miti::NepaliDate]
       def parse(date_string)
         regex = %r{\A\d{4}[-/\s]\d{1,2}[-/\s]\d{1,2}\z}
         raise "Invalid Date Format" unless regex.match(date_string)
