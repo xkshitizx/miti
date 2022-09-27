@@ -8,7 +8,7 @@ module Miti
     ##
     # Creating an object of BsToAd requires a Miti::NepaliDate object
     #
-    # params Miti::NepaliDate
+    # @param [Miti::NepaliDate]
     def initialize(nepali_date)
       @barsa = nepali_date.barsa
       @mahina = nepali_date.mahina
@@ -28,7 +28,7 @@ module Miti
     # Incase the date is not found, error is raised.
     # For fixing the issue, the value for range in date_range method should be increased.
     #
-    # returns Date
+    # @return [Date]
     def english_date
       date_range.each do |date|
         return date if Miti::AdToBs.new(date).convert(to_h: true) ==
@@ -43,7 +43,7 @@ module Miti
     # This method creates new english date with year/month/day value equal to Nepali date and subtracts by 20,711
     # and returns the range of date around it.
     #
-    # return []<Date>
+    # @return [DateRange]
     def date_range(range = 8)
       probable_english_date = Date.new(barsa, mahina, gatey) - 20_711
       probable_english_date.prev_day(range)..probable_english_date.next_day(range)
