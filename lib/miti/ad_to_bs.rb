@@ -113,7 +113,10 @@ module Miti
     end
 
     ##
-    # Determines the number of days from Jan 1st, for leap years
+    # Determines the number of days from Jan 1st to Baisakh 1st, for leap years
+    # - 263 days for normal year
+    # - 264 days for year following the leap years
+    # @return [Integer], refers to the number of days
     def nepali_nth_day_for_english_new_year
       return 264 if year_after_leap_year?
 
