@@ -10,6 +10,10 @@ module Miti
   class Error < StandardError; end
 
   class << self
+    ##
+    # This method converts the provided english date to nepali date
+    # @param english_date [String], refers to date in string format
+    # @return [<Miti::NepaliDate>], refers to the converted nepali date
     def to_bs(english_date)
       date = parse_english_date(english_date)
       Miti::AdToBs.new(date).convert
@@ -17,6 +21,10 @@ module Miti
       "Invalid Date"
     end
 
+    ##
+    # This method converts the provided nepali date to english date
+    # @param nepali_date [String], refers to date in string format
+    # @return [<Date>], refers to the converted english date from nepali date
     def to_ad(nepali_date)
       date = parse_nepali_date(nepali_date)
       Miti::BsToAd.new(date).convert
@@ -24,6 +32,12 @@ module Miti
 
     private
 
+    ##
+    # This method parses the provided parameter english date to Date object
+    # It checks the class of the parameter and returns the Date object accordingly
+    # @param english_date [String], refers to date in string format OR
+    # @param english_date [Date], refers to date object
+    # @return [<Date>], refers to Date object
     def parse_english_date(english_date)
       klass = english_date.class.to_s
 
@@ -36,6 +50,12 @@ module Miti
       end
     end
 
+    ##
+    # This method parses the provided parameter nepali_date to Miti::NepaliDate object
+    # It checks the class of the parameter and returns the Miti::NepaliDate object accordingly
+    # @param nepali_date [String], refers to date in string format OR
+    # @param nepali_date [Miti::NepaliDate ], refers to date object
+    # @return [<Date>], refers to Date object
     def parse_nepali_date(nepali_date)
       klass = nepali_date.class.to_s
 
