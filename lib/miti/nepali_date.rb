@@ -45,7 +45,7 @@ module Miti
     # @param separator(- by default)
     #
     # @return [String]
-    def to_s(seperator = "-")
+    def to_s(separator: "-")
       return unless [" ", "/", "-"].include?(seperator)
 
       [barsa, mahina, gatey].reduce("") do |final_date, date_element|
