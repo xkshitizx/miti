@@ -24,6 +24,10 @@ module Miti
       { barsa: final_nepali_year_month_value[:year], mahina: mahina, gatey: gatey }
     end
 
+    private
+
+    attr_reader :english_date, :nepali_year
+
     ##
     # Calculates the nepalese year and month respectively
     # determines the difference of nepali_nth_day and total_days_in_nepali_year
@@ -65,10 +69,6 @@ module Miti
 
       current_month_max_day if days_passed.zero?
     end
-
-    private
-
-    attr_reader :english_date, :nepali_year
 
     def mahina_gatey
       @mahina_gatey ||= begin
