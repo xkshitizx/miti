@@ -48,9 +48,7 @@ module Miti
     def to_s(separator: "-")
       return unless [" ", "/", "-"].include?(seperator)
 
-      [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-        "#{final_date}#{final_date.blank? ? "" : seperator}#{date_element < 10 ? 0 : ""}#{date_element}"
-      end
+      barsa.to_s + separator + double_digit(mahina) + separator + double_digit(gatey)
     end
 
     ##
@@ -118,6 +116,14 @@ module Miti
 
         raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
       end
+    end
+
+    private
+
+    def double_digit(value)
+      return "0#{value}" if value < 10
+
+      value.to_s
     end
   end
 end
