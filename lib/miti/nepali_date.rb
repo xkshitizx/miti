@@ -5,6 +5,7 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
+    class InvalidSeparatorError < StandardError; end
     attr_reader :barsa, :mahina, :gatey
 
     ##
@@ -46,7 +47,7 @@ module Miti
     #
     # @return [String]
     def to_s(separator: "-")
-      return unless [" ", "/", "-"].include?(seperator)
+      raise InvalidSeparatorError, "Invalid separator provided." unless [" ", "/", "-"].include?(separator)
 
       barsa.to_s + separator + double_digit(mahina) + separator + double_digit(gatey)
     end
