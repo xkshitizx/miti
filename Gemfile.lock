@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    miti (0.0.2)
+    miti (0.0.3)
 
 GEM
   remote: https://rubygems.org/
