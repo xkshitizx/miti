@@ -49,7 +49,7 @@ module Miti
       return unless [" ", "/", "-"].include?(seperator)
 
       [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-        "#{final_date}#{final_date.blank? ? "" : seperator}#{date_element < 10 ? 0 : ""}#{date_element}"
+        "#{final_date}#{final_date.empty? ? "" : seperator}#{date_element < 10 ? 0 : ""}#{date_element}"
       end
     end
 
@@ -72,7 +72,7 @@ module Miti
     end
 
     def yday
-      days_before_month = Miti::Data::DateData.year_month_days_hash[barsa].first(mahina - 1).sum
+      days_before_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa].first(mahina - 1).sum
       days_before_month + gatey
     end
 
@@ -112,7 +112,7 @@ module Miti
       def validate_parsed_date(barsa, mahina, gatey)
         raise "Mahina can't be greater than 12" if mahina > 12
 
-        max_day_of_month = Miti::Data::DateData.year_month_days_hash[barsa][mahina - 1]
+        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa][mahina - 1]
 
         return unless max_day_of_month < gatey
 
