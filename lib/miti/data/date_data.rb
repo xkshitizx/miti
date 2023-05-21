@@ -2,6 +2,7 @@
 
 module Miti
   module Data # rubocop:disable Metrics/ModuleLength
+    # date reference https://github.com/dxillar/nepali-datetime/blob/master/nepali_datetime/data/calendar_bs.csv
     NEPALI_YEAR_MONTH_HASH = {
       1975 => [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
       1976 => [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
@@ -131,6 +132,7 @@ module Miti
       2100 => [31, 32, 31, 32, 30, 31, 30, 29, 30, 29, 30, 30]
     }.freeze
 
+    # scraped from https://www.ashesh.com.np/nepali-date-converter.php
     BAISHKH_FIRST_CORRESPONDING_APRIL = {
       1975 => 13,
       1976 => 13,
