@@ -102,10 +102,10 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        regex = %r{\A\d{4}[-/\s]\d{1,2}[-/\s]\d{1,2}\z}
+        regex = %r{\A\d{4}[,-/\s]\d{1,2}[,-/\s]\d{1,2}\z}
         raise "Invalid Date Format" unless regex.match(date_string)
 
-        delimiters = ["-", " ", "/"]
+        delimiters = ["-", " ", "/", ","]
         barsa, mahina, gatey = date_string.split(Regexp.union(delimiters))
         validate_parsed_date(barsa.to_i, mahina.to_i, gatey.to_i)
         NepaliDate.new(barsa: barsa.to_i, mahina: mahina.to_i, gatey: gatey.to_i)
