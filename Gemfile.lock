@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    miti (0.0.3)
+    miti (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -53,6 +53,7 @@ GEM
     unicode-display_width (2.2.0)
 
 PLATFORMS
+  ruby
   x86_64-linux
 
 DEPENDENCIES
