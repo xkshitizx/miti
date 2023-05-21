@@ -16,8 +16,8 @@ module Miti
     # @return [Miti::NepaliDate]
     def convert
       year, month, day = nepali_date_for_new_year
-      day_count_from_beginning_of_poush = 1 - day
-      nepali_date = corresponding_nepali_date(year, month - 1, day_count_from_beginning_of_poush)
+      day_count_from_poush1 = 1 - day
+      nepali_date = corresponding_nepali_date(year, month - 1, day_count_from_poush1)
       Miti::NepaliDate.new(**nepali_date)
     end
 
@@ -44,18 +44,19 @@ module Miti
     # @param **day_count_from_beginning_of_poush**<Integer>, Refers to number of days from poush
     #
     # @return [Hash], hash consisting (:barsa, :mahina, :gatey)
-    def corresponding_nepali_date(year, base_month_index, day_count_from_beginning_of_poush)
+    def corresponding_nepali_date(year, start_month_index, day_count_from_poush1)
       nepali_year_month_hash[year][base_month_index..].each_with_index do |days_in_month, index|
-        counted_days = day_count_from_beginning_of_poush + days_in_month
+      nepali_year_month_hash[year][start_month_index..].each_with_index do |days_in_month, month_index|
         next day_count_from_beginning_of_poush += days_in_month if counted_days < yth_day
-
+        counted_days = day_count_from_poush1 + days_in_month
         barsa_mahina = { barsa: year, mahina: index + base_month_index + 1 }
-        return barsa_mahina.merge(gatey: days_in_month) if counted_days == yth_day
+        next day_count_from_poush1 += days_in_month if counted_days < days_to_count
 
-        return barsa_mahina.merge(gatey: yth_day - day_count_from_beginning_of_poush)
+        calculated_gatey = counted_days == days_to_count ? days_in_month : days_to_count - day_count_from_poush1
+        return { barsa: year, mahina: month_index + start_month_index + 1, gatey: calculated_gatey }
       end
 
-      corresponding_nepali_date(year + 1, 0, day_count_from_beginning_of_poush)
+      corresponding_nepali_date(year + 1, 0, day_count_from_poush1)
     end
 
     ##
@@ -70,8 +71,8 @@ module Miti
     # Returns number specifying **Nth english date** after **Jan 1st** in specific year
     #
     # @return Integer
-    def yth_day
-      @yth_day ||= english_date.yday
+    def days_to_count
+      @days_to_count ||= english_date.yday
     end
   end
 end

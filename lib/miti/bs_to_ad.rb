@@ -11,8 +11,9 @@ module Miti
       @nepali_date = nepali_date
     end
 
+    # Return equivalent english date for nepali date
     def convert
-      english_date
+      corresponding_ad_for_baisakh1 + days_to_be_added_from_baisakh1
     end
 
     private
@@ -20,17 +21,16 @@ module Miti
     attr_reader :nepali_date
 
     ##
-    # Iterates through range of dates close to probable english date and checks to get exact english_date
-    # Incase the date is not found, error is raised.
-    # For fixing the issue, the value for range in date_range method should be increased.
-    #
-    # @return [Date]
-    def english_date
+    # Returns corresponding AD for baisakh first of nepali year
+    def corresponding_ad_for_baisakh1
       current_year = nepali_date.barsa
+      baisakh1_corresponding_ad = Miti::Data::BAISHKH_FIRST_CORRESPONDING_APRIL[current_year]
+      # AD is 57 years ahead of BS and always in April
+      Date.new(current_year - 57, 4, baisakh1_corresponding_ad)
+    end
 
-      english_day_for_naya_barsa = Miti::Data::BAISHKH_FIRST_CORRESPONDING_APRIL[current_year]
-
-      Date.new(current_year - 57, 4, english_day_for_naya_barsa) + nepali_date.yday - 1
+    def days_to_be_added_from_baisakh1
+      nepali_date.yday - 1
     end
   end
 end
