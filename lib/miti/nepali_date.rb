@@ -77,6 +77,10 @@ module Miti
     end
 
     class << self
+      def today
+        AdToBs.new(Date.today).convert
+      end
+
       def week_days
         %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार]
       end
