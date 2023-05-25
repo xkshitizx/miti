@@ -8,13 +8,13 @@ Gem::Specification.new do |spec|
   spec.email = %w[kshitizlama03@gmail.com sanzaymanandhar99@gmail.com]
 
   spec.summary = "Date converter BS to AD and vice-versa."
-  spec.description = "This gem can help to convert English date(AD) to Nepali date(BS) and vice-versa."
-  # spec.homepage = "TODO: Put your gem's website or public repo URL here."
+  spec.description = "Convert English date(AD) to Nepali date(BS) and vice-versa."
+  spec.homepage = "https://github.com/xkshitizx/miti"
   spec.required_ruby_version = ">= 2.6.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
-  # spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["homepage_uri"] = "https://github.com/xkshitizx/miti"
   spec.metadata["source_code_uri"] = "https://github.com/xkshitizx/miti"
   # spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
   spec.metadata = { "rubygems_mfa_required" => "true" }
