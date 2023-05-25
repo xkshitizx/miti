@@ -4,6 +4,7 @@ require "date"
 require_relative "miti/ad_to_bs"
 require_relative "miti/bs_to_ad"
 require_relative "miti/nepali_date"
+require_relative "miti/data/date_data"
 
 # Base module for the gem
 module Miti

@@ -49,7 +49,9 @@ module Miti
     def to_s(separator: "-")
       raise InvalidSeparatorError, "Invalid separator provided." unless [" ", "/", "-"].include?(separator)
 
-      barsa.to_s + separator + double_digit(mahina) + separator + double_digit(gatey)
+      [barsa, mahina, gatey].reduce("") do |final_date, date_element|
+        "#{final_date}#{final_date.empty? ? "" : seperator}#{date_element < 10 ? 0 : ""}#{date_element}"
+      end
     end
 
     ##
@@ -71,11 +73,15 @@ module Miti
     end
 
     def yday
-      days_before_month = Miti::Data::DateData.year_month_days_hash[barsa].first(mahina - 1).sum
+      days_before_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa].first(mahina - 1).sum
       days_before_month + gatey
     end
 
     class << self
+      def today
+        AdToBs.new(Date.today).convert
+      end
+
       def week_days
         %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार]
       end
@@ -97,10 +103,10 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        regex = %r{\A\d{4}[-/\s]\d{1,2}[-/\s]\d{1,2}\z}
+        regex = %r{\A\d{4}[,-/\s]\d{1,2}[,-/\s]\d{1,2}\z}
         raise "Invalid Date Format" unless regex.match(date_string)
 
-        delimiters = ["-", " ", "/"]
+        delimiters = ["-", " ", "/", ","]
         barsa, mahina, gatey = date_string.split(Regexp.union(delimiters))
         validate_parsed_date(barsa.to_i, mahina.to_i, gatey.to_i)
         NepaliDate.new(barsa: barsa.to_i, mahina: mahina.to_i, gatey: gatey.to_i)
@@ -111,20 +117,12 @@ module Miti
       def validate_parsed_date(barsa, mahina, gatey)
         raise "Mahina can't be greater than 12" if mahina > 12
 
-        max_day_of_month = Miti::Data::DateData.year_month_days_hash[barsa][mahina - 1]
+        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa][mahina - 1]
 
         return unless max_day_of_month < gatey
 
         raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
       end
-    end
-
-    private
-
-    def double_digit(value)
-      return "0#{value}" if value < 10
-
-      value.to_s
     end
   end
 end
