@@ -50,7 +50,7 @@ module Miti
       raise InvalidSeparatorError, "Invalid separator provided." unless [" ", "/", "-"].include?(separator)
 
       [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-        "#{final_date}#{final_date.empty? ? "" : seperator}#{date_element < 10 ? 0 : ""}#{date_element}"
+        "#{final_date}#{final_date.empty? ? "" : separator}#{date_element < 10 ? 0 : ""}#{date_element}"
       end
     end
 
