@@ -13,4 +13,6 @@ gem "rubocop", "~> 1.21"
 
 gem "byebug"
 
+gem "thor"
+
 gem "simplecov"
