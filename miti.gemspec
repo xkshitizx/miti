@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
                    "miti.gemspec", ".github/*.md",
                    "Gemfile", "Rakefile"]
   spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  spec.executables = ["miti"]
   spec.require_paths = ["lib"]
   spec.license = "MIT"
 
