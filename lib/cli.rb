@@ -15,7 +15,7 @@ module Miti
 
     desc "today", "today's nepali miti"
     def today
-      current_nepali_miti = Miti.to_bs(Date.today)
+      current_nepali_miti = Miti.to_bs(Date.today.to_s)
       output_txt = "[#{current_nepali_miti}] #{current_nepali_miti.descriptive}"
 
       @shell.say(output_txt, :green)
