@@ -55,7 +55,7 @@ module Miti
                                                                 [2100, 1975, :BS]
                                                               end
       year_value = date.split("-")[0].to_i
-      return unless year_value.between?(min_conversion_year, max_conversion_year)
+      return if year_value.between?(min_conversion_year, max_conversion_year)
 
       raise ConversionUnavailableError,
             "Conversion only available for #{min_conversion_year}-#{max_conversion_year} #{date_format}"
