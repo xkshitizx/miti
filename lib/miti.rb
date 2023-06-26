@@ -49,17 +49,16 @@ module Miti
     # @return ConversionUnavailableError
 
     def validate_date_range(date:, conversion:)
-      max_conversion_year = if conversion == :to_bs
-                              date_format = :AD
-                              2044
-                            else
-                              date_format = :BS
-                              2100
-                            end
+      max_conversion_year, min_conversion_year, date_format = if conversion == :to_bs
+                                                                [2044, 1919, :AD]
+                                                              else
+                                                                [2100, 1975, :BS]
+                                                              end
+      year_value = date.split("-")[0].to_i
+      return unless year_value > max_conversion_year || year_value < min_conversion_year
 
-      return unless date.split("-")[0].to_i > max_conversion_year
-
-      raise ConversionUnavailableError, "Conversion only available upto #{max_conversion_year} #{date_format}"
+      raise ConversionUnavailableError,
+            "Conversion only available for #{min_conversion_year}-#{max_conversion_year} #{date_format}"
     end
 
     ##
