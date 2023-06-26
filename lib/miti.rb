@@ -9,6 +9,7 @@ require_relative "miti/data/date_data"
 # Base module for the gem
 module Miti
   class Error < StandardError; end
+  class ConversionUnavailableError < StandardError; end
 
   class << self
     ##
@@ -16,6 +17,8 @@ module Miti
     # @param english_date [String], refers to date in string format
     # @return [<Miti::NepaliDate>], refers to the converted nepali date
     def to_bs(english_date)
+      validate_date_range(date: english_date, conversion: :to_bs)
+
       date = parse_english_date(english_date)
       Miti::AdToBs.new(date).convert
     rescue Date::Error
@@ -27,11 +30,36 @@ module Miti
     # @param nepali_date [String], refers to date in string format
     # @return [<Date>], refers to the converted english date from nepali date
     def to_ad(nepali_date)
+      validate_date_range(date: nepali_date, conversion: :to_ad)
+
       date = parse_nepali_date(nepali_date)
       Miti::BsToAd.new(date).convert
     end
 
     private
+
+    ##
+    # This method throws an exception if the conversion is not available
+    # for both BS and AD
+    # - For AD to BS conversion max conversion is supported upto 2044 AD
+    # - For BS to AD conversion max conversion is supported upto 2100 BS
+    # @param date [String], refers to date in string format '20XX-XX-XX'
+    # @param conversion, [Symbol], refers to the conversion either :to_ad or :to_bs
+    #
+    # @return ConversionUnavailableError
+
+    def validate_date_range(date:, conversion:)
+      max_conversion_year, min_conversion_year, date_format = if conversion == :to_bs
+                                                                [2044, 1919, :AD]
+                                                              else
+                                                                [2100, 1975, :BS]
+                                                              end
+      year_value = date.split("-")[0].to_i
+      return unless year_value > max_conversion_year || year_value < min_conversion_year
+
+      raise ConversionUnavailableError,
+            "Conversion only available for #{min_conversion_year}-#{max_conversion_year} #{date_format}"
+    end
 
     ##
     # This method parses the provided parameter english date to Date object
