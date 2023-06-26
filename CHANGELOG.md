@@ -8,3 +8,8 @@
 - Change Class method to constant for fetching date. Add corresponding date for Baisakh 1 and Jan 1.
 - Simplify logic for AD to BS conversion
 - Refactor and add comments
+
+## [1.0.0] - 2023-06-27
+- New release 1.0.0
+- Integrate Miti CLI
+- Miti CLI now accepts arguments for date conversion
