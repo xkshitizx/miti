@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    miti (1.0.0)
+    miti (1.0.1)
       thor (~> 1.2, >= 1.2.2)
 
 GEM
