@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     miti (1.0.0)
+      thor (~> 1.2, >= 1.2.2)
 
 GEM
   remote: https://rubygems.org/
