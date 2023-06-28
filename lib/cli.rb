@@ -23,7 +23,7 @@ module Miti
       @shell.say("#{formatted_miti}\n#{formatted_date}", :green)
     end
 
-    desc "on ENGLISH_DATE", "converts english date to nepali miti"
+    desc "to_bs ENGLISH_DATE", "converts english date to nepali miti"
     def to_bs(english_date)
       converted_nepali_miti = Miti.to_bs(english_date)
       output_txt = "[#{converted_nepali_miti} BS] #{converted_nepali_miti.descriptive}"
@@ -34,7 +34,7 @@ module Miti
       @shell.say(output_txt, @output_color)
     end
 
-    desc "to NEPALI_DATE", "converts nepali miti to english date"
+    desc "to_ad NEPALI_DATE", "converts nepali miti to english date"
     def to_ad(nepali_date)
       converted_english_date = Miti.to_ad(nepali_date)
       output_txt = "[#{converted_english_date} AD] #{converted_english_date.strftime("%B %d, %Y %A")}"
