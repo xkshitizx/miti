@@ -43,6 +43,57 @@ Miti.to_bs("2022/10/12").to_s(separator: "/") # separator can be [" ", "/"]
 Miti.to_ad("2079/06/26")
   #=> #<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>
 ```
+
+## MITI CLI
+Open your terminal or command prompt and run the `miti` command to access the available features.
+```shell
+$ miti
+```
+The MITI CLI app will display the available commands. To execute a specific command, type the command followed by any required arguments.
+
+## Available Commands
+
+### **today**
+
+The `today` command displays current day's miti as well as date.
+
+To use the `today` command, run the following:
+
+```shell
+$ miti today
+```
+
+Output:
+```ruby
+[2080-03-13 BS] Ashadh 13, 2080 Wednesday
+[2023-06-28 AD] June 28, 2023 Wednesday
+
+```
+### **to_bs**
+The `to_bs` command converts an English date to the Miti (Nepali Date). To use the `to_bs` command, run the following:
+
+```shell
+$ miti to_bs 2023-06-28
+```
+
+Output:
+```ruby
+[2080-03-13 BS] Ashadh 13, 2080 Wednesday
+```
+
+### **to_ad**
+
+The `to_ad` command converts a Miti to the English date. To use the `to_ad` command, run the following:
+
+```shell
+$ miti to_ad 2080-03-13
+```
+
+Output:
+```ruby
+[2023-06-28 AD] June 28, 2023 Wednesday
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
