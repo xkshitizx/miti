@@ -63,6 +63,16 @@ module Miti
       @shell.say(output_txt, @output_color)
     end
 
+    desc "next", "get remaining days for 1st of next month and last day of current month"
+    def next
+      next_month = Miti.to_bs(Date.today.to_s).next_month_first
+      days_left_description = "\n#{next_month[:days_left]} days left until 1st #{next_month[:month_name]}"
+      current_month_last_description = "Current month's last date => #{next_month[:antim_gatey]}"
+
+      @shell.say(days_left_description, :green)
+      @shell.say(current_month_last_description, :cyan)
+    end
+
     no_commands do
       def self.exit_on_failure?
         true

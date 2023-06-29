@@ -77,6 +77,18 @@ module Miti
       days_before_month + gatey
     end
 
+    def next_month_first
+      current_year_calendar = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa]
+      next_month = mahina < 12 ? mahina : 0
+      antim_gatey = current_year_calendar[mahina - 1]
+
+      {
+        days_left: antim_gatey - gatey + 1,
+        month_name: NepaliDate.months_in_english[next_month],
+        antim_gatey: "#{antim_gatey} #{NepaliDate.months_in_english[mahina - 1]}"
+      }
+    end
+
     class << self
       def today
         AdToBs.new(Date.today).convert
