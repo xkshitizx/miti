@@ -1,7 +1,7 @@
 # Miti 
 [![Gem Version](https://badge.fury.io/rb/miti.svg)](https://badge.fury.io/rb/miti)
 
-This gem can help to convert English date to Nepali date and vice-versa.
+Converts English Date to Miti *(Nepali date)* and vice-versa. Also Miti provides built in CLI app which has date conversion features.
 
 ## Installation
 
@@ -13,86 +13,9 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install miti
 ## Usage
+  1. [Miti](docs/miti.md)
+  2. [Miti CLI](docs/cli.md)
 
-A Miti::NepaliDate(nepali miti) object is created with Miti.to_bs, while Date(english date) object is created with Miti.to_ad
-```ruby
-require 'miti'
-
-Miti.to_bs("2022/10/12") # args can also be sent as "2022-12-12"
-  #=> #<Miti::NepaliDate:0x00007fec31b93ac8 @barsa=2079, @gatey=26, @mahina=6>
-
-Miti.to_bs("2022/10/12").descriptive
-  #=> "Asoj 26, 2079 Wednesday"
-
-Miti.to_bs("2022/10/12").descriptive(nepali: true)
-  #=> "आश्विन 27, 2079 Thursday(बिहिबार)"
-
-Miti.to_bs("2022/10/12").tarik
-  #=> #<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>
-
-Miti.to_bs("2022/10/12").to_h
-  #=> {:barsa=>2079, :mahina=>6, :gatey=>26, :bar=>3, :tarik=>#<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>}
-
-Miti.to_bs("2022/10/12").to_s
-  #=> "2079-06-26"
-
-Miti.to_bs("2022/10/12").to_s(separator: "/") # separator can be [" ", "/"]
-  #=> "2079/06/26" when (separator: "/")
-  #=> "2079 06 26" when (separator: " ")
-
-Miti.to_ad("2079/06/26")
-  #=> #<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>
-```
-
-## MITI CLI
-Open your terminal or command prompt and run the `miti` command to access the available features.
-```shell
-$ miti
-```
-The MITI CLI app will display the available commands. To execute a specific command, type the command followed by any required arguments.
-
-## Available Commands
-
-### **today**
-
-The `today` command displays current day's miti as well as date.
-
-To use the `today` command, run the following:
-
-```shell
-$ miti today
-```
-
-Output:
-```ruby
-[2080-03-13 BS] Ashadh 13, 2080 Wednesday
-[2023-06-28 AD] June 28, 2023 Wednesday
-
-```
-### **to_bs**
-The `to_bs` command converts an English date to the Miti (Nepali Date). To use the `to_bs` command, run the following:
-
-```shell
-$ miti to_bs 2023-06-28
-```
-
-Output:
-```ruby
-[2080-03-13 BS] Ashadh 13, 2080 Wednesday
-```
-
-### **to_ad**
-
-The `to_ad` command converts a Miti to the English date. To use the `to_ad` command, run the following:
-
-```shell
-$ miti to_ad 2080-03-13
-```
-
-Output:
-```ruby
-[2023-06-28 AD] June 28, 2023 Wednesday
-```
 
 ## Development
 
