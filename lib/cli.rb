@@ -23,7 +23,16 @@ module Miti
       @shell.say("#{formatted_miti}\n#{formatted_date}", :green)
     end
 
-    desc "to_bs ENGLISH_DATE", "converts english date to nepali miti"
+    desc "to_bs ENGLISH_DATE", "converts ENGLISH_DATE to Nepali Miti"
+    long_desc <<-DESC
+    Converts english date to nepali miti.
+    The `to_bs` command takes a argument <ENGLISH_DATE>, argument must be in YYYY/MM/DD or YYYY-MM-DD format
+
+    Example: $ miti to_bs 2023-06-28
+
+    Output: [2080-03-13 BS] Ashadh 13, 2080 Wednesday
+    DESC
+
     def to_bs(english_date)
       converted_nepali_miti = Miti.to_bs(english_date)
       output_txt = "[#{converted_nepali_miti} BS] #{converted_nepali_miti.descriptive}"
@@ -34,7 +43,16 @@ module Miti
       @shell.say(output_txt, @output_color)
     end
 
-    desc "to_ad NEPALI_DATE", "converts nepali miti to english date"
+    desc "to_ad NEPALI_MITI", "converts NEPALI_MITI to English Date"
+    long_desc <<-DESC
+    Converts nepali miti.
+    The `to_ad` command takes a argument <NEPALI_MITI>, argument must be in YYYY/MM/DD or YYYY-MM-DD format
+
+    Example: $ miti to_ad 2080-03-13
+
+    Output: [2023-06-28 AD] June 28, 2023 Wednesday
+    DESC
+
     def to_ad(nepali_date)
       converted_english_date = Miti.to_ad(nepali_date)
       output_txt = "[#{converted_english_date} AD] #{converted_english_date.strftime("%B %d, %Y %A")}"
