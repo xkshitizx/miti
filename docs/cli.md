@@ -43,3 +43,17 @@ Output:
 ```ruby
 [2023-06-28 AD] June 28, 2023 Wednesday
 ```
+
+### **next**
+
+The `next` command informs about days remaning for 1st of next month and last day of current month in BS.
+
+Example(On Ashadh 15):
+
+    $ miti next
+
+Output:
+```ruby
+17 days left until 1st Shrawan
+Current month's last date => 31 Ashadh
+```
