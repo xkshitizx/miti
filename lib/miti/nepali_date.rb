@@ -15,7 +15,7 @@ module Miti
       @mahina = mahina
       @gatey = gatey
 
-      Miti::NepaliDate::DateValidator.validate!(barsa, mahina, gatey)
+      Miti::NepaliDate::Validator.validate!(barsa, mahina, gatey)
     end
 
     ##
@@ -117,25 +117,7 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        regex = %r{\A\d{4}[,-/\s]\d{1,2}[,-/\s]\d{1,2}\z}
-        raise "Invalid Date Format" unless regex.match(date_string)
-
-        delimiters = ["-", " ", "/", ","]
-        barsa, mahina, gatey = date_string.split(Regexp.union(delimiters))
-        validate_parsed_date(barsa.to_i, mahina.to_i, gatey.to_i)
-        NepaliDate.new(barsa: barsa.to_i, mahina: mahina.to_i, gatey: gatey.to_i)
-      end
-
-      private
-
-      def validate_parsed_date(barsa, mahina, gatey)
-        raise "Mahina can't be greater than 12" if mahina > 12
-
-        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa][mahina - 1]
-
-        return unless max_day_of_month < gatey
-
-        raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
+        Miti::NepaliDate::Parser.new(date_string).parse
       end
     end
   end
