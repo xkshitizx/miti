@@ -14,6 +14,8 @@ module Miti
       @barsa = barsa
       @mahina = mahina
       @gatey = gatey
+
+      Miti::NepaliDate::DateValidator.validate!(barsa, mahina, gatey)
     end
 
     ##
