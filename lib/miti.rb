@@ -7,6 +7,7 @@ require_relative "miti/nepali_date"
 require_relative "miti/data/date_data"
 require_relative "miti/nepali_date/parser"
 require_relative "miti/nepali_date/validator"
+require_relative "miti/nepali_date/comparison"
 
 # Base module for the gem
 module Miti
