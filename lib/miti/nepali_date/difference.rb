@@ -11,8 +11,7 @@ module Miti
         @date2 = date2
       end
 
-      def difference
-        # find out the greater and smaller date
+      def differentiate
         assign_greater_and_smaller_date
         @reference_greater_date = calculated_reference_greater_date
         calculate_difference

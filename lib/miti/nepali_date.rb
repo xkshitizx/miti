@@ -5,7 +5,6 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
-    class InvalidSeparatorError < StandardError; end
     attr_reader :barsa, :mahina, :gatey
 
     ##
@@ -49,11 +48,7 @@ module Miti
     #
     # @return [String]
     def to_s(separator: "-")
-      raise InvalidSeparatorError, "Invalid separator provided." unless [" ", "/", "-"].include?(separator)
-
-      [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-        "#{final_date}#{final_date.empty? ? "" : separator}#{date_element < 10 ? 0 : ""}#{date_element}"
-      end
+      Miti::NepaliDate::Formatter.new(self).to_s(separator)
     end
 
     ##
@@ -61,17 +56,8 @@ module Miti
     # When nepali flag is true, month is returned in nepali font and week day in Nepali
     #
     # @return [String]
-    def descriptive(nepali: false)
-      month_index = mahina - 1
-      if nepali
-        month = NepaliDate.months[month_index]
-        week_day = "#{NepaliDate.week_days_in_english[bar]}(#{NepaliDate.week_days[bar]})}"
-      else
-        month = NepaliDate.months_in_english[month_index]
-        week_day = tarik.strftime("%A")
-      end
-
-      "#{month} #{gatey}, #{barsa} #{week_day}"
+    def descriptive(font = "english")
+      Miti::NepaliDate::Formatter.new(self).descriptive(font)
     end
 
     def yday
@@ -94,22 +80,6 @@ module Miti
     class << self
       def today
         AdToBs.new(Date.today).convert
-      end
-
-      def week_days
-        %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार]
-      end
-
-      def months
-        %w[वैशाख ज्येष्ठ आषाढ़ श्रावण भाद्र आश्विन कार्तिक मंसिर पौष माघ फाल्गुण चैत्र]
-      end
-
-      def months_in_english
-        %w[Baishakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra]
-      end
-
-      def week_days_in_english
-        %w[Aitabar Somabar Mangalbar Budhabar Bihibar Sukrabar Sanibar]
       end
 
       ##
