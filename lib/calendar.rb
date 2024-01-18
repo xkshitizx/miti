@@ -54,5 +54,6 @@ class Calendar
         print " "  # Add space between days
       end
     end
+    puts "\n"
   end
 end
