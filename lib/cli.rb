@@ -3,6 +3,7 @@
 require "thor"
 require "date"
 require_relative "miti"
+require_relative "calendar"
 
 module Miti
   # class to integrate CLI
@@ -71,6 +72,16 @@ module Miti
 
       @shell.say(days_left_description, :green)
       @shell.say(current_month_last_description, :cyan)
+    end
+
+    desc "english_calendar", "show current month's english calendar"
+    def english_calendar
+      Calendar.new.english_calendar
+    end
+
+    desc "nepali_calendar", "show current month's nepali calendar"
+    def nepali_calendar
+      Calendar.new.nepali_calendar
     end
 
     no_commands do
