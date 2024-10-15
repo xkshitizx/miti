@@ -14,6 +14,6 @@
 - Integrate Miti CLI
 - Miti CLI now accepts arguments for date conversion
 
-## [1.0.1] - 2023-06-28
+## [1.0.1] - 2023-07-01
 - add gem dependency thor
 - Update documentation for CLI app usage and readme.md
