@@ -3,6 +3,7 @@
 require "thor"
 require "date"
 require_relative "miti"
+require_relative "miti/cli/next"
 
 module Miti
   # class to integrate CLI
