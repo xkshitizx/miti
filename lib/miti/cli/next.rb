@@ -28,7 +28,7 @@ module Miti
       end
 
       def days_left
-        NepaliDate::Difference.new(next_month_first, current_date).difference[:days]
+        NepaliDate::Difference.new(next_month_first, current_date).differentiate[:days]
       end
 
       def next_month_first
