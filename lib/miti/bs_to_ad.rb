@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "date"
-
 module Miti
   # class to handle the algorithm for converting AD to BS
   class BsToAd
@@ -10,43 +8,29 @@ module Miti
     #
     # @param [Miti::NepaliDate]
     def initialize(nepali_date)
-      @barsa = nepali_date.barsa
-      @mahina = nepali_date.mahina
-      @gatey = nepali_date.gatey
+      @nepali_date = nepali_date
     end
 
+    # Return equivalent english date for nepali date
     def convert
-      english_date
+      corresponding_ad_for_baisakh1 + days_to_be_added_from_baisakh1
     end
 
     private
 
-    attr_reader :barsa, :mahina, :gatey
+    attr_reader :nepali_date
 
     ##
-    # Iterates through range of dates close to probable english date and checks to get exact english_date
-    # Incase the date is not found, error is raised.
-    # For fixing the issue, the value for range in date_range method should be increased.
-    #
-    # @return [Date]
-    def english_date
-      date_range.each do |date|
-        return date if Miti::AdToBs.new(date).convert(to_h: true) ==
-                       { barsa: barsa, mahina: mahina, gatey: gatey }
-      end
-      raise "Failed to convert."
+    # Returns corresponding AD for baisakh first of nepali year
+    def corresponding_ad_for_baisakh1
+      current_year = nepali_date.barsa
+      baisakh1_corresponding_ad = Miti::Data::BAISHKH_FIRST_CORRESPONDING_APRIL[current_year]
+      # AD is 57 years ahead of BS and always in April
+      Date.new(current_year - 57, 4, baisakh1_corresponding_ad)
     end
 
-    ##
-    # Since the obtained date is not exact, range of date (default 17) are returned containing the date.
-    # The average gap between nepali year and english date is 20,711 days considering the numericality of months.
-    # This method creates new english date with year/month/day value equal to Nepali date and subtracts by 20,711
-    # and returns the range of date around it.
-    #
-    # @return [DateRange]
-    def date_range(range = 8)
-      probable_english_date = Date.new(barsa, mahina, gatey) - 20_711
-      probable_english_date.prev_day(range)..probable_english_date.next_day(range)
+    def days_to_be_added_from_baisakh1
+      nepali_date.yday - 1
     end
   end
 end
