@@ -5,6 +5,11 @@ require_relative "miti/ad_to_bs"
 require_relative "miti/bs_to_ad"
 require_relative "miti/nepali_date"
 require_relative "miti/data/date_data"
+require_relative "miti/nepali_date/parser"
+require_relative "miti/nepali_date/validator"
+require_relative "miti/nepali_date/comparison"
+require_relative "miti/nepali_date/difference"
+require_relative "miti/nepali_date/formatter"
 
 # Base module for the gem
 module Miti
@@ -34,6 +39,12 @@ module Miti
 
       date = parse_nepali_date(nepali_date)
       Miti::BsToAd.new(date).convert
+    end
+
+    def differentiate(date1, date2)
+      first_date = Miti::NepaliDate.parse(date1)
+      second_date = Miti::NepaliDate.parse(date2)
+      Miti::NepaliDate::Difference.new(first_date, second_date).differentiate
     end
 
     private
