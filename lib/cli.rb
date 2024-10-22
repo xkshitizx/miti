@@ -4,6 +4,7 @@ require "thor"
 require "date"
 require_relative "miti"
 require_relative "calendar"
+require_relative "miti/cli/next"
 
 module Miti
   # class to integrate CLI
@@ -21,7 +22,8 @@ module Miti
       formatted_miti = "[#{current_nepali_miti} BS] #{current_nepali_miti.descriptive}"
       formatted_date = "[#{date} AD] " + date.strftime("%B %d, %Y %A")
 
-      @shell.say("#{formatted_miti}\n#{formatted_date}", :green)
+      @shell.say(formatted_miti.to_s, :green)
+      @shell.say(formatted_date.to_s, :green)
     end
 
     desc "to_bs ENGLISH_DATE", "converts ENGLISH_DATE to Nepali Miti"
@@ -66,12 +68,14 @@ module Miti
 
     desc "next", "get remaining days for 1st of next month and last day of current month"
     def next
-      next_month = Miti.to_bs(Date.today.to_s).next_month_first
-      days_left_description = "\n#{next_month[:days_left]} days left until 1st #{next_month[:month_name]}"
-      current_month_last_description = "Current month's last date => #{next_month[:antim_gatey]}"
-
+      days_left_description, current_month_last_description = Cli::Next.new(NepaliDate.today).calculate
       @shell.say(days_left_description, :green)
-      @shell.say(current_month_last_description, :cyan)
+      @shell.say(current_month_last_description, :green)
+    end
+
+    desc "difference", "get remaining days for 1st of next month and last day of current month"
+    def difference(date1, date2)
+      @shell.say(Miti.differentiate(date1, date2), :cyan)
     end
 
     desc "english_calendar", "show current month's english calendar"
@@ -89,5 +93,8 @@ module Miti
         true
       end
     end
+
+    map ad: :to_ad
+    map bs: :to_bs
   end
 end

@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files = Dir["README.md", "LICENSE",
                    "CHANGELOG.md", "lib/**/*.rb",
-                   "lib/**/*.rake",
+                   "lib/**/*.rake", "docs/*.md",
                    "miti.gemspec", ".github/*.md",
                    "Gemfile", "Rakefile"]
   spec.metadata = {
