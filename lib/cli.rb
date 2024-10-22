@@ -3,6 +3,7 @@
 require "thor"
 require "date"
 require_relative "miti"
+require_relative "calendar"
 require_relative "miti/cli/next"
 
 module Miti
@@ -75,6 +76,16 @@ module Miti
     desc "difference", "get remaining days for 1st of next month and last day of current month"
     def difference(date1, date2)
       @shell.say(Miti.differentiate(date1, date2), :cyan)
+    end
+
+    desc "english_calendar", "show current month's english calendar"
+    def english_calendar
+      Calendar.new.english_calendar
+    end
+
+    desc "nepali_calendar", "show current month's nepali calendar"
+    def nepali_calendar
+      Calendar.new.nepali_calendar
     end
 
     no_commands do
