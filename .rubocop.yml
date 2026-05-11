@@ -2,8 +2,9 @@ AllCops:
   TargetRubyVersion: 2.6
   NewCops: enable
   SuggestExtensions: false
-  Exclude: 
+  Exclude:
     - "lib/miti/date_data.rb"
+    - "vendor/**/*"
 
 Style/StringLiterals:
   Enabled: true
