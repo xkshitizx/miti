@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Date converter BS to AD and vice-versa."
   spec.description = "Convert English date(AD) to Nepali date(BS) and vice-versa."
   spec.homepage = "https://github.com/xkshitizx/miti"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.0.0"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
     "bug_tracker_uri" => "https://github.com/xkshitizx/miti/issues",
     "changelog_uri" => "https://github.com/xkshitizx/miti/blob/main/CHANGELOG.md",
     "homepage_uri" => "https://github.com/xkshitizx/miti",
-    "source_code_uri" => "https://github.com/xkshitizx/miti/tree/v#{Miti::VERSION}",
+    "source_code_uri" => "https://github.com/xkshitizx/miti",
     "rubygems_mfa_required" => "true"
   }
   spec.bindir = "exe"

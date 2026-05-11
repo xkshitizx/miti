@@ -14,36 +14,47 @@ module Miti
   class << self
     ##
     # This method converts the provided english date to nepali date
-    # @param english_date [String], refers to date in string format
+    # @param english_date [String, Date, Time, DateTime], refers to date
     # @return [<Miti::NepaliDate>], refers to the converted nepali date
     def to_bs(english_date)
-      validate_date_range(date: english_date, conversion: :to_bs)
-
       date = parse_english_date(english_date)
+      validate_date_range(date: date, conversion: :to_bs)
+
       Miti::AdToBs.new(date).convert
-    rescue Date::Error
+    rescue ArgumentError
       "Invalid Date"
     end
 
     ##
     # This method converts the provided nepali date to english date
-    # @param nepali_date [String], refers to date in string format
+    # @param nepali_date [String, Miti::NepaliDate], refers to date
     # @return [<Date>], refers to the converted english date from nepali date
     def to_ad(nepali_date)
-      validate_date_range(date: nepali_date, conversion: :to_ad)
-
       date = parse_nepali_date(nepali_date)
+      validate_date_range(date: date, conversion: :to_ad)
+
       Miti::BsToAd.new(date).convert
     end
 
     private
 
     ##
+    # Extracts the year from various date-like objects
+    def year_from_date(date)
+      case date
+      when Date then date.year
+      when Miti::NepaliDate then date.barsa
+      when String then date.split("-")[0].to_i
+      else date.to_s.split("-")[0].to_i
+      end
+    end
+
+    ##
     # This method throws an exception if the conversion is not available
     # for both BS and AD
     # - For AD to BS conversion max conversion is supported upto 2044 AD
     # - For BS to AD conversion max conversion is supported upto 2100 BS
-    # @param date [String], refers to date in string format '20XX-XX-XX'
+    # @param date [Date, Miti::NepaliDate], refers to parsed date object
     # @param conversion, [Symbol], refers to the conversion either :to_ad or :to_bs
     #
     # @return ConversionUnavailableError
@@ -54,7 +65,7 @@ module Miti
                                                               else
                                                                 [2100, 1975, :BS]
                                                               end
-      year_value = date.split("-")[0].to_i
+      year_value = year_from_date(date)
       return if year_value.between?(min_conversion_year, max_conversion_year)
 
       raise ConversionUnavailableError,
@@ -91,7 +102,7 @@ module Miti
       case klass
       when "String"
         Miti::NepaliDate.parse(nepali_date)
-      when klass == "Miti::NepaliDate"
+      when "Miti::NepaliDate"
         nepali_date
       else
         raise "Invalid date format."

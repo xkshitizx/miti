@@ -63,7 +63,7 @@ module Miti
       month_index = mahina - 1
       if nepali
         month = NepaliDate.months[month_index]
-        week_day = "#{NepaliDate.week_days_in_english[bar]}(#{NepaliDate.week_days[bar]})}"
+        week_day = "#{NepaliDate.week_days_in_english[bar]}(#{NepaliDate.week_days[bar]})"
       else
         month = NepaliDate.months_in_english[month_index]
         week_day = tarik.strftime("%A")
@@ -117,9 +117,8 @@ module Miti
       def validate_parsed_date(barsa, mahina, gatey)
         raise "Mahina can't be greater than 12" if mahina > 12
 
-        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa][mahina - 1]
-
-        return unless max_day_of_month < gatey
+        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa]&.at(mahina - 1)
+        return unless max_day_of_month && max_day_of_month < gatey
 
         raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
       end
