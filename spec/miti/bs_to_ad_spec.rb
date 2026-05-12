@@ -9,7 +9,7 @@ RSpec.describe Miti::BsToAd do
       Miti::NepaliDate.new(barsa: 2079, mahina: 9, gatey: 30) => Date.new(2023, 1, 14),
       Miti::NepaliDate.new(barsa: 2079, mahina: 2, gatey: 18) => Date.new(2022, 6, 1),
       Miti::NepaliDate.new(barsa: 2081, mahina: 1, gatey: 1) => Date.new(2024, 4, 13),
-      Miti::NepaliDate.new(barsa: 2081, mahina: 9, gatey: 17) => Date.new(2025, 1, 1),
+      Miti::NepaliDate.new(barsa: 2081, mahina: 9, gatey: 17) => Date.new(2025, 1, 1)
     }
   end
 

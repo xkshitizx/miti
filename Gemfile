@@ -16,3 +16,5 @@ gem "byebug"
 gem "thor"
 
 gem "simplecov"
+
+gem "docile", ">= 1.3", "< 1.4"
