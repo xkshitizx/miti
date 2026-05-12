@@ -18,5 +18,6 @@ gem "thor"
 gem "simplecov"
 
 gem "racc", "~> 1.8"
+gem "base64", "~> 0.2"
 
 gem "docile", ">= 1.3", "< 1.4"
