@@ -1,9 +1,12 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.0
   NewCops: enable
   SuggestExtensions: false
-  Exclude: 
-    - "lib/miti/date_data.rb"
+  Exclude:
+    - "lib/miti/data/date_data.rb"
+    - "vendor/bundle/**/*"
+    - "bin/**/*"
+    - "node_modules/**/*"
 
 Style/StringLiterals:
   Enabled: true
@@ -19,12 +22,12 @@ Layout/LineLength:
 Metrics/BlockLength:
   Max: 120
   Exclude: 
-   - "miti.gemspec"
-   - "spec/**/*"
-   - "lib/miti/data/date_data.rb"
+    - "miti.gemspec"
+    - "spec/**/*"
+    - "lib/miti/data/date_data.rb"
 
 Metrics/MethodLength:
-  Max: 9
+  Max: 15
   Exclude:
     - "lib/miti/data/date_data.rb"
 

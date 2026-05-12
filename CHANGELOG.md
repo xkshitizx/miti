@@ -1,4 +1,11 @@
-## [Unreleased]
+## [1.1.0] - 2025-01-01
+
+- Fix bug in `parse_nepali_date` where passing a `Miti::NepaliDate` object raised an error
+- Fix stray closing brace in `descriptive(nepali: true)` output
+- Add comprehensive test coverage for `BsToAd`, `NepaliDate`, and integration specs
+- Bump minimum Ruby version to 3.0
+- Update CI to test against Ruby 3.0–3.4 and use actions/checkout@v4
+- Update Rubocop config (target 3.0, correct date_data path, relaxed MethodLength)
 
 ## [0.0.1] - 2022-09-24
 
