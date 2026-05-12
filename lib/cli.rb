@@ -80,12 +80,12 @@ module Miti
 
     desc "english_calendar", "show current month's english calendar"
     def english_calendar
-      Calendar.new.english_calendar
+      @shell.say(Miti::Calendar.new(shell: @shell).english_calendar)
     end
 
     desc "nepali_calendar", "show current month's nepali calendar"
     def nepali_calendar
-      Calendar.new.nepali_calendar
+      @shell.say(Miti::Calendar.new(shell: @shell).nepali_calendar)
     end
 
     no_commands do
