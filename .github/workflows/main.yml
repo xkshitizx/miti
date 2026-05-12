@@ -3,29 +3,15 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ["3.0", "3.4"]
+        ruby: ["3.0", "3.4"]
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.ruby-version }}
+        ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run tests
-      run: bundle exec rspec
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: "3.4"
-        bundler-cache: true
-    - name: Run linter
-      run: bundle exec rubocop
+    - run: bundle exec rake
