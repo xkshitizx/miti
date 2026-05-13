@@ -21,6 +21,7 @@ module Miti
         {
           nepaliYearMonthHash: Miti::Data::NEPALI_YEAR_MONTH_HASH.transform_keys(&:to_s),
           baishakhFirstCorrespondingApril: Miti::Data::BAISHKH_FIRST_CORRESPONDING_APRIL.transform_keys(&:to_s),
+          janFirstCorrespondingGatey: Miti::Data::JAN_FIRST_CORRESPONDING_GATEY.transform_keys(&:to_s),
           monthsEnglish: Miti::NepaliDate::MONTHS_IN_ENGLISH,
           monthsNepali: Miti::NepaliDate::MONTHS_IN_NEPALI,
           weekdaysEnglish: Miti::NepaliDate::WEEK_DAYS_IN_ENGLISH,
