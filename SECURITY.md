@@ -13,7 +13,7 @@ This project maintains security fixes for the latest released version line.
 
 Please report vulnerabilities privately using GitHub Security Advisories:
 
-- https://github.com/<owner>/<repo>/security/advisories/new (replace with this repository path)
+- https://github.com/xkshitizx/miti/security/advisories/new
 
 If private advisory reporting is unavailable, open an issue and explicitly request a private contact channel.
 
