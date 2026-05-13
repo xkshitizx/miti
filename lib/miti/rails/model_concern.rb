@@ -45,7 +45,7 @@ module Miti
                  Miti::ConversionUnavailableError,
                  Miti::NepaliDate::FormatError,
                  Miti::NepaliDate::DateRangeError => e
-            raise InvalidNepaliDateError.new(e.message), cause: e
+            raise InvalidNepaliDateError, e.message, cause: e
           end
         end
 
