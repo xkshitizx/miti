@@ -62,7 +62,7 @@ module Miti
       when Date then date.year
       when Miti::NepaliDate then date.barsa
       when String
-        matched_year = date.match(%r{\A(\d{4})[-/ ]}) || date.match(/\A(\d{4}),/)
+        matched_year = date.match(%r{\A(\d{4})[-/, ]})
         raise ArgumentError, "Invalid date format." unless matched_year
 
         matched_year[1].to_i
