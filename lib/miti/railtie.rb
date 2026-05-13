@@ -18,8 +18,10 @@ module Miti
       end
     end
 
-    initializer "miti.assets" do
-      config.assets.precompile += %w[miti/calendar.css]
-    end if respond_to?(:config) && config.respond_to?(:assets)
+    if respond_to?(:config) && config.respond_to?(:assets)
+      initializer "miti.assets" do
+        config.assets.precompile += %w[miti/calendar.css]
+      end
+    end
   end
 end

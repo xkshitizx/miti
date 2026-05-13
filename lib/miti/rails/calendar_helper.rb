@@ -3,7 +3,7 @@
 module Miti
   module Rails
     module CalendarHelper
-      def nepali_calendar(options = {}, &block)
+      def nepali_calendar(options = {}, &)
         today = options[:today] || Date.today
         year  = options[:year]  || Miti::NepaliDate.today.barsa
         month = options[:month] || Miti::NepaliDate.today.mahina
@@ -14,7 +14,7 @@ module Miti
         first_day_ad  = Miti.to_ad("#{year}/#{month}/01")
         start_wday    = first_day_ad.wday
 
-        content = build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &block)
+        content = build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &)
         turbo ? tag.div(content, data: { turbo_frame: turbo }) : content
       end
 
@@ -44,13 +44,13 @@ module Miti
 
         table = tag.table(html, class: "miti-calendar") do
           safe_join([
-            tag.thead(tag.tr(safe_join(
-              %w[Sun Mon Tue Wed Thu Fri Sat].map { |d|
-                tag.th(d, class: "miti-calendar__header")
-              }
-            ))),
-            tag.tbody(safe_join(build_weeks(year, month, days_in_month, start_wday, today, &block)))
-          ])
+                      tag.thead(tag.tr(safe_join(
+                                         %w[Sun Mon Tue Wed Thu Fri Sat].map do |d|
+                                           tag.th(d, class: "miti-calendar__header")
+                                         end
+                                       ))),
+                      tag.tbody(safe_join(build_weeks(year, month, days_in_month, start_wday, today, &block)))
+                    ])
         end
 
         safe_join([nav, table])
@@ -74,9 +74,9 @@ module Miti
           classes << "miti-calendar__day--sat" if presenter.saturday?
 
           inner = safe_join([
-            tag.span(gatey.to_s, class: "miti-calendar__gatey"),
-            tag.span(presenter.ad_date.strftime("%d"), class: "miti-calendar__ad-date")
-          ])
+                              tag.span(gatey.to_s, class: "miti-calendar__gatey"),
+                              tag.span(presenter.ad_date.strftime("%d"), class: "miti-calendar__ad-date")
+                            ])
 
           inner << capture(presenter, &block) if block
 
@@ -108,7 +108,7 @@ module Miti
         link_to(label, { bs_year: new_year, bs_month: new_month }, attrs)
       end
 
-      def build_agenda_groups(start_bs, end_bs, group_by, today, &block)
+      def build_agenda_groups(start_bs, end_bs, group_by, today, &)
         groups = []
         current = start_bs
 
@@ -123,7 +123,7 @@ module Miti
                    collect_week(current, end_bs)
                  end
 
-          groups << render_agenda_group(header, days, today, &block)
+          groups << render_agenda_group(header, days, today, &)
           current = days.last ? next_bs_day(days.last) : nil
         end
 
@@ -146,6 +146,7 @@ module Miti
         while c && c <= end_bs
           days << c
           break if c.bar == 6
+
           c = next_bs_day(c)
         end
         days
@@ -154,11 +155,11 @@ module Miti
       def render_agenda_group(header, days, today, &block)
         tag.section(class: "miti-agenda__group") do
           safe_join([
-            tag.h3(header, class: "miti-agenda__header"),
-            tag.ul(class: "miti-agenda__list") do
-              safe_join(days.map { |day| render_agenda_item(day, today, &block) })
-            end
-          ])
+                      tag.h3(header, class: "miti-agenda__header"),
+                      tag.ul(class: "miti-agenda__list") do
+                        safe_join(days.map { |day| render_agenda_item(day, today, &block) })
+                      end
+                    ])
         end
       end
 
@@ -171,14 +172,14 @@ module Miti
 
         tag.li(class: classes.join(" ")) do
           safe_join([
-            tag.div(class: "miti-agenda__date") do
-              safe_join([
-                tag.span(day.descriptive, class: "miti-agenda__bs"),
-                tag.span(day.tarik.strftime("%a %d %b"), class: "miti-agenda__ad")
-              ])
-            end,
-            tag.div(item_content, class: "miti-agenda__content")
-          ])
+                      tag.div(class: "miti-agenda__date") do
+                        safe_join([
+                                    tag.span(day.descriptive, class: "miti-agenda__bs"),
+                                    tag.span(day.tarik.strftime("%a %d %b"), class: "miti-agenda__ad")
+                                  ])
+                      end,
+                      tag.div(item_content, class: "miti-agenda__content")
+                    ])
         end
       end
 

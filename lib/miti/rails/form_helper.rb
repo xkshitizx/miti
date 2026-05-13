@@ -33,17 +33,18 @@ module Miti
         input = ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
 
         icon = tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
-          data: { action: "click->miti-date-picker#open" }) do
-          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
+                          data: { action: "click->miti-date-picker#open" }) do
+          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none",
+                  stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
             tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
-            tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
-            tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
-            tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
+              tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
+              tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
+              tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
           end
         end
 
         tag.div(class: "miti-date-field-wrapper",
-          data: { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }) do
+                data: { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }) do
           input + icon
         end
       end
@@ -82,7 +83,7 @@ module Miti
       private
 
       def bs_value_for(object, method)
-        return nil unless object&.respond_to?(method)
+        return nil unless object.respond_to?(method)
 
         ad_date = object.public_send(method)
         return nil unless ad_date
@@ -101,7 +102,7 @@ module Miti
         when Miti::NepaliDate
           value
         when String
-          parts = value.split(/[-\/]/)
+          parts = value.split(%r{[-/]})
           if parts.length == 3
             Miti::NepaliDate.new(barsa: parts[0].to_i, mahina: parts[1].to_i, gatey: parts[2].to_i)
           else

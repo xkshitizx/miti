@@ -19,11 +19,9 @@ module Miti
           pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
         RUBY
 
-        if behavior == :revoke
-          append_to_file "config/importmap.rb", content
-        elsif !file_contains?("config/importmap.rb", content.strip)
-          append_to_file "config/importmap.rb", content
-        end
+        return if behavior == :invoke && file_contains?("config/importmap.rb", content.strip)
+
+        append_to_file "config/importmap.rb", content
       end
 
       def register_stimulus_controller
@@ -35,11 +33,9 @@ module Miti
           application.register("miti-date-picker", MitiDatePickerController)
         JS
 
-        if behavior == :revoke
-          append_to_file controller_path, "\n#{content}"
-        elsif !file_contains?(controller_path, content.strip)
-          append_to_file controller_path, "\n#{content}"
-        end
+        return if behavior == :invoke && file_contains?(controller_path, content.strip)
+
+        append_to_file controller_path, "\n#{content}"
       end
 
       def add_stylesheet
@@ -55,14 +51,11 @@ module Miti
         css_file = detect_css_file
         return unless css_file
 
-        if behavior == :revoke
-          inject_into_file css_file, before: "\n */" do
-            "\n * *= require miti/calendar"
-          end
-        elsif uses_sprockets? && !file_contains?(css_file, "require miti/calendar")
-          inject_into_file css_file, before: "\n */" do
-            "\n * *= require miti/calendar"
-          end
+        return if behavior == :invoke && !uses_sprockets?
+        return if behavior == :invoke && file_contains?(css_file, "require miti/calendar")
+
+        inject_into_file css_file, before: "\n */" do
+          "\n * *= require miti/calendar"
         end
       end
 
@@ -70,18 +63,13 @@ module Miti
         layout = detect_layout
         return unless layout
 
-        if behavior == :revoke
-          tags = "\n    <%= include_miti_date_picker_data %>"
-          tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
-          inject_into_file layout, before: "</head>" do
-            tags + "\n  "
-          end
-        elsif !file_contains?(layout, "include_miti_date_picker_data")
-          tags = "\n    <%= include_miti_date_picker_data %>"
-          tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
-          inject_into_file layout, before: "</head>" do
-            tags + "\n  "
-          end
+        tags = "\n    <%= include_miti_date_picker_data %>"
+        tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
+
+        return if behavior == :invoke && file_contains?(layout, "include_miti_date_picker_data")
+
+        inject_into_file layout, before: "</head>" do
+          "#{tags}\n  "
         end
       end
 
