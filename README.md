@@ -1,7 +1,8 @@
 # Miti 
 [![Gem Version](https://badge.fury.io/rb/miti.svg)](https://badge.fury.io/rb/miti)
+[![CI](https://github.com/xkshitizx/miti/actions/workflows/main.yml/badge.svg)](https://github.com/xkshitizx/miti/actions/workflows/main.yml)
 
-Converts English Date to Miti *(Nepali date)* and vice-versa. Also Miti provides built in CLI app which has date conversion features.
+Converts English Date to Miti *(Nepali date)* and vice-versa. Also Miti provides built in CLI app which has date conversion features and a full Rails integration.
 
 ## Installation
 
@@ -13,8 +14,9 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install miti
 ## Usage
-  1. [Miti](docs/miti.md)
-  2. [Miti CLI](docs/cli.md)
+  1. [Miti](docs/miti.md) — core date conversion API
+  2. [Miti CLI](docs/cli.md) — command-line date converter
+  3. [Rails integration](docs/rails.md) — date pickers, calendars, form helpers, model concern
 
 
 ## Development
