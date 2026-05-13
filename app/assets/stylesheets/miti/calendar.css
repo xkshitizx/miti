@@ -143,20 +143,54 @@
 }
 
 /* Miti Date Field */
-.miti-date-field {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
+.miti-date-field-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 160px;
   width: 100%;
-  max-width: 240px;
+}
+
+.miti-date-field {
+  padding: 4px 28px 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.miti-date-field:hover {
+  border-color: #9ca3af;
 }
 
 .miti-date-field:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.miti-date-field__icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.15s;
+  z-index: 1;
+}
+
+.miti-date-field__icon:hover {
+  color: #3b82f6;
 }
 
 /* Miti Date Select */
@@ -287,5 +321,41 @@
 }
 
 .miti-date-picker__today-btn:hover {
-  background: #eff6ff;
+  background: var(--miti-bg-today-btn-hover);
+}
+
+/* Miti Date Picker grid (month/year picker) */
+.miti-date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.miti-date-picker__cell {
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--miti-border-radius-sm);
+  transition: background 0.1s;
+}
+
+.miti-date-picker__cell:hover {
+  background: var(--miti-bg-hover);
+}
+
+.miti-date-picker__cell--today {
+  color: var(--miti-text-accent);
+  font-weight: 600;
+}
+
+.miti-date-picker__cell--selected {
+  background: var(--miti-bg-selected);
+  color: var(--miti-bg-base);
+  font-weight: 600;
+}
+
+.miti-date-picker__cell--selected:hover {
+  background: var(--miti-bg-selected-hover);
 }
