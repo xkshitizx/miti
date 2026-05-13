@@ -21,6 +21,11 @@ class CalendarTestView < ActionView::Base
   def request
     nil
   end
+
+  def turbo_frame_tag(id, content = nil, &block)
+    inner = block ? capture(&block) : content
+    %(<turbo-frame id="#{id}">#{inner}</turbo-frame>).html_safe
+  end
 end
 
 RSpec.describe Miti::Rails::CalendarHelper do
@@ -49,6 +54,17 @@ RSpec.describe Miti::Rails::CalendarHelper do
     it "renders weekday header abbreviations" do
       expect(html).to include("Sun")
       expect(html).to include("Mon")
+    end
+
+    it "merges custom html attributes on the calendar table" do
+      html = view.nepali_calendar(year: 2080, month: 1, turbo_frame: nil, html: { id: "calendar", class: "custom" })
+      expect(html).to include('id="calendar"')
+      expect(html).to include('class="custom miti-calendar"')
+    end
+
+    it "renders a turbo-frame wrapper when turbo_frame is enabled" do
+      html = view.nepali_calendar(year: 2080, month: 1)
+      expect(html).to include('<turbo-frame id="nepali_calendar">')
     end
   end
 

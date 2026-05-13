@@ -18,7 +18,7 @@ All date arguments must be in `YYYY-MM-DD` or `YYYY/MM/DD` format.
 
     $ miti today
     # [2082-01-15 BS] Baisakh 15, 2082 Wednesday
-    # [2025-04-28 AD] April 28, 2025 Wednesday
+    # [2025-04-28 AD] April 28, 2025 Monday
 
     $ miti to_bs 2025-04-28
     # [2082-01-15 BS] Baisakh 15, 2082 Wednesday
@@ -66,20 +66,20 @@ To undo: `rails destroy miti:install`
 ### Date picker (popover calendar)
 
 ```erb
-<%= form.nepali_date_field :happened_on %>
+<%= form.nepali_date_field :happened_on_bs %>
 <!-- readonly text input with calendar icon that opens a month/year picker popover -->
 ```
 
 With a default value:
 
 ```erb
-<%= form.nepali_date_field :happened_on, value: "2082-01-15" %>
+<%= form.nepali_date_field :happened_on_bs, value: "2082-01-15" %>
 ```
 
 ### Date select (3 dropdowns)
 
 ```erb
-<%= form.nepali_date_select :happened_on %>
+<%= form.nepali_date_select :happened_on_bs %>
 <!-- renders year, month, day select elements -->
 ```
 

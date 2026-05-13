@@ -15,7 +15,13 @@ module Miti
         start_wday    = first_day_ad.wday
 
         content = build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &)
-        turbo ? tag.div(content, data: { turbo_frame: turbo }) : content
+        return content unless turbo
+
+        if respond_to?(:turbo_frame_tag)
+          turbo_frame_tag(turbo, content)
+        else
+          tag.div(content, data: { turbo_frame: turbo })
+        end
       end
 
       def nepali_calendar_agenda(start_date, end_date, options = {}, &block)
@@ -50,7 +56,10 @@ module Miti
           safe_join([prev_link, title, next_link])
         end
 
-        table = tag.table(html, class: "miti-calendar") do
+        table_html = html.to_h
+        table_html[:class] = [table_html[:class], "miti-calendar"].compact.join(" ")
+
+        table = tag.table(**table_html) do
           safe_join([
                       tag.thead(tag.tr(safe_join(
                                          %w[Sun Mon Tue Wed Thu Fri Sat].map do |d|

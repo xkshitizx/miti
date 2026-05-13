@@ -3,6 +3,8 @@
 module Miti
   module Rails
     module FormHelper
+      DATE_PICKER_ACTIONS = "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
+
       def month_options
         @month_options ||= (1..12).map do |m|
           english = Miti::NepaliDate.months_in_english[m - 1]
@@ -12,11 +14,10 @@ module Miti
       end
 
       def nepali_date_field(object_name, method, options = {})
-        object      = options.delete(:object) || instance_variable_get(:"@#{object_name}")
+        object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         default_val = options.delete(:value)
         value       = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
-
-        actions = "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
+        field_method = form_method_for(object, method)
 
         tag_options = {
           type: "text",
@@ -26,11 +27,11 @@ module Miti
           class: "miti-date-field",
           value: value&.to_s,
           data: {
-            action: actions.html_safe
+            action: DATE_PICKER_ACTIONS.html_safe
           }
         }.merge(options)
 
-        input = ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
+        input = ActionView::Helpers::Tags::TextField.new(object_name, field_method, self, tag_options).render
 
         icon = tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
                           data: { action: "click->miti-date-picker#open" }) do
@@ -52,6 +53,7 @@ module Miti
       def nepali_date_select(object_name, method, options = {})
         object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         value  = bs_value_for(object, method)
+        field_method = form_method_for(object, method)
 
         selected_year  = value&.barsa
         selected_month = value&.mahina
@@ -59,36 +61,48 @@ module Miti
 
         order  = options.delete(:order) || %i[year month day]
         prompt = options.delete(:prompt) || false
-        prefix = "#{object_name}_#{method}"
 
         tags = order.map do |part|
           case part
           when :year
             select_options = (1975..2100).map { |y| [y.to_s, y] }
-            select_tag("#{prefix}(1i)", options_for_select(select_options, selected_year),
+            select_tag("#{object_name}[#{field_method}(1i)]", options_for_select(select_options, selected_year),
                        prompt: prompt, class: "miti-date-select__year")
           when :month
-            select_tag("#{prefix}(2i)", options_for_select(month_options, selected_month),
+            select_tag("#{object_name}[#{field_method}(2i)]", options_for_select(month_options, selected_month),
                        prompt: prompt, class: "miti-date-select__month")
           when :day
             day_options = (1..31).map { |d| [d.to_s.rjust(2, "0"), d] }
-            select_tag("#{prefix}(3i)", options_for_select(day_options, selected_day),
+            select_tag("#{object_name}[#{field_method}(3i)]", options_for_select(day_options, selected_day),
                        prompt: prompt, class: "miti-date-select__day")
           end
         end
 
-        safe_join([hidden_field_tag("#{object_name}[#{method}]", "", id: "#{prefix}_hidden")] + tags, " ")
+        safe_join(tags, " ")
       end
 
       private
 
       def bs_value_for(object, method)
+        bs_method = "#{method}_bs"
+        if object.respond_to?(bs_method)
+          bs_date = object.public_send(bs_method)
+          return convert_to_nepali(bs_date) if bs_date
+        end
+
         return nil unless object.respond_to?(method)
 
         ad_date = object.public_send(method)
         return nil unless ad_date
 
         convert_to_nepali(ad_date)
+      end
+
+      def form_method_for(object, method)
+        bs_method = :"#{method}_bs"
+        return bs_method if object.respond_to?("#{method}_bs") || object.respond_to?("#{method}_bs=")
+
+        method
       end
 
       def parse_bs_value(value)
@@ -116,9 +130,9 @@ module Miti
   end
 end
 
-module ActionView
-  module Helpers
-    class FormBuilder
+module Miti
+  module Rails
+    module FormBuilderMethods
       def nepali_date_field(method, options = {})
         @template.nepali_date_field(@object_name, method, options.merge(object: @object))
       end
@@ -127,5 +141,13 @@ module ActionView
         @template.nepali_date_select(@object_name, method, options.merge(object: @object))
       end
     end
+  end
+end
+
+if defined?(ActionView::Helpers::FormBuilder)
+  ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
+elsif defined?(ActiveSupport)
+  ActiveSupport.on_load(:action_view) do
+    ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
   end
 end

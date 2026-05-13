@@ -19,7 +19,12 @@ module Miti
           pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
         RUBY
 
-        return if behavior == :invoke && file_contains?("config/importmap.rb", content.strip)
+        if behavior == :revoke
+          gsub_file "config/importmap.rb", /\n?#{Regexp.escape(content)}/, ""
+          return
+        end
+
+        return if file_contains?("config/importmap.rb", content.strip)
 
         append_to_file "config/importmap.rb", content
       end
@@ -33,7 +38,12 @@ module Miti
           application.register("miti-date-picker", MitiDatePickerController)
         JS
 
-        return if behavior == :invoke && file_contains?(controller_path, content.strip)
+        if behavior == :revoke
+          gsub_file controller_path, /\n?#{Regexp.escape(content)}/, ""
+          return
+        end
+
+        return if file_contains?(controller_path, content.strip)
 
         append_to_file controller_path, "\n#{content}"
       end
@@ -42,17 +52,25 @@ module Miti
         css_path = "app/assets/stylesheets/miti/calendar.css"
 
         if options.copy_styles?
-          create_file css_path, File.read(gem_css_path)
-          say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
-        elsif behavior == :revoke && File.exist?(css_path)
-          create_file css_path, File.read(gem_css_path)
+          if behavior == :revoke
+            remove_file css_path if File.exist?(css_path)
+          else
+            create_file css_path, File.read(gem_css_path)
+            say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
+          end
         end
 
         css_file = detect_css_file
         return unless css_file
 
-        return if behavior == :invoke && !uses_sprockets?
-        return if behavior == :invoke && file_contains?(css_file, "require miti/calendar")
+        return unless uses_sprockets?
+
+        if behavior == :revoke
+          gsub_file css_file, %r{\n \* \*= require miti/calendar}, ""
+          return
+        end
+
+        return if file_contains?(css_file, "require miti/calendar")
 
         inject_into_file css_file, before: "\n */" do
           "\n * *= require miti/calendar"
@@ -66,7 +84,13 @@ module Miti
         tags = "\n    <%= include_miti_date_picker_data %>"
         tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
 
-        return if behavior == :invoke && file_contains?(layout, "include_miti_date_picker_data")
+        if behavior == :revoke
+          gsub_file layout, /\n\s*<%= include_miti_date_picker_data %>/, ""
+          gsub_file layout, %r{\n\s*<%= stylesheet_link_tag "miti/calendar" %>}, ""
+          return
+        end
+
+        return if file_contains?(layout, "include_miti_date_picker_data")
 
         inject_into_file layout, before: "</head>" do
           "#{tags}\n  "

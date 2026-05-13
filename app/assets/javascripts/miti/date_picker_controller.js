@@ -393,6 +393,12 @@ export default class extends Controller {
     const focused = this.popover.querySelector(".miti-date-picker__day:focus")
     if (focused && focused.dataset.gatey) {
       this._selectDay({ currentTarget: focused })
+      return
+    }
+
+    const selected = this.popover.querySelector(".miti-date-picker__day--selected[data-gatey]")
+    if (selected) {
+      this._selectDay({ currentTarget: selected })
     }
   }
 }

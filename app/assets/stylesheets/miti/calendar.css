@@ -1,4 +1,14 @@
 /* Miti Calendar */
+:root {
+  --miti-bg-base: #fff;
+  --miti-bg-hover: #f3f4f6;
+  --miti-bg-selected: #2563eb;
+  --miti-bg-selected-hover: #1d4ed8;
+  --miti-bg-today-btn-hover: #eff6ff;
+  --miti-text-accent: #2563eb;
+  --miti-border-radius-sm: 4px;
+}
+
 .miti-calendar {
   width: 100%;
   border-collapse: collapse;

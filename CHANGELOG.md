@@ -8,7 +8,7 @@
 - Add `nepali_date_select` form helper with 3-dropdown BS date selector
 - Add `has_nepali_date` model concern for AD↔BS auto-conversion on ActiveRecord attributes
 - Add `include_miti_date_picker_data` helper for injecting calendar data into layouts
-- Add `Miti::DayPresenter` for calendar/agenda view blocks
+- Add `Miti::Rails::Calendar::DayPresenter` for calendar/agenda view blocks
 - Add `rails generate miti:install` generator (importmap, Stimulus, stylesheets) with `--copy-styles`
 - Add Stimulus date picker controller with day/month/year grid views and adaptive positioning
 - Add `converter.js` — BS↔AD conversion engine as ES module

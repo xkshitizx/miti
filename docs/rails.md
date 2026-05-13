@@ -24,27 +24,27 @@ To undo everything:
 ### Date picker field
 
 ```erb
-<%= form.nepali_date_field :happened_on %>
+<%= form.nepali_date_field :happened_on_bs %>
 <!-- Renders a readonly text input with a calendar icon that opens a popover -->
 ```
 
 With a default value:
 
 ```erb
-<%= form.nepali_date_field :happened_on, value: "2082-01-15" %>
-<%= form.nepali_date_field :happened_on, value: @event.happened_on_bs %>
+<%= form.nepali_date_field :happened_on_bs, value: "2082-01-15" %>
+<%= form.nepali_date_field :happened_on_bs, value: @event.happened_on_bs %>
 ```
 
 Without a form builder:
 
 ```erb
-<%= nepali_date_field :event, :happened_on %>
+<%= nepali_date_field :event, :happened_on_bs %>
 ```
 
 ### Date select (3 dropdowns)
 
 ```erb
-<%= form.nepali_date_select :happened_on %>
+<%= form.nepali_date_select :happened_on_bs %>
 ```
 
 ### Model concern

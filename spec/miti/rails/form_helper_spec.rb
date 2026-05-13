@@ -29,6 +29,12 @@ RSpec.describe Miti::Rails::FormHelper do
       expect(html).to include('name="event[happened_on]"')
     end
 
+    it "targets *_bs when the object exposes BS accessors" do
+      object = double(happened_on_bs: nil)
+      html = view.nepali_date_field(object_name, method_name, object: object)
+      expect(html).to include('name="event[happened_on_bs]"')
+    end
+
     it "has autocomplete off" do
       expect(html).to include('autocomplete="off"')
     end
@@ -66,9 +72,18 @@ RSpec.describe Miti::Rails::FormHelper do
       expect(html).to include("miti-date-select__day")
     end
 
-    it "includes hidden field for the actual attribute" do
-      expect(html).to include('type="hidden"')
-      expect(html).to include('name="event[happened_on]"')
+    it "uses Rails multiparameter naming" do
+      expect(html).to include('name="event[happened_on(1i)]"')
+      expect(html).to include('name="event[happened_on(2i)]"')
+      expect(html).to include('name="event[happened_on(3i)]"')
+    end
+
+    it "targets *_bs multiparameter names when the object exposes BS accessors" do
+      object = double(happened_on_bs: nil)
+      html = view.nepali_date_select(object_name, method_name, object: object)
+      expect(html).to include('name="event[happened_on_bs(1i)]"')
+      expect(html).to include('name="event[happened_on_bs(2i)]"')
+      expect(html).to include('name="event[happened_on_bs(3i)]"')
     end
 
     it "includes month names" do

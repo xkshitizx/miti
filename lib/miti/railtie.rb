@@ -9,6 +9,7 @@ module Miti
         include Miti::Rails::CalendarHelper
         include Miti::Rails::FormHelper
         include Miti::Rails::DatePickerHelper
+        ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
       end
     end
 
@@ -20,7 +21,11 @@ module Miti
 
     if respond_to?(:config) && config.respond_to?(:assets)
       initializer "miti.assets" do
-        config.assets.precompile += %w[miti/calendar.css]
+        config.assets.precompile += %w[
+          miti/calendar.css
+          miti/converter.js
+          miti/date_picker_controller.js
+        ]
       end
     end
   end
