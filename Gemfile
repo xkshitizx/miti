@@ -16,3 +16,8 @@ gem "byebug"
 gem "thor"
 
 gem "simplecov"
+
+gem "base64", "~> 0.3"
+gem "racc", "~> 1.8"
+
+gem "docile", ">= 1.3", "< 1.4"
