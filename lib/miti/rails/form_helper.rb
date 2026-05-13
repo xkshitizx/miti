@@ -72,7 +72,7 @@ module Miti
             select_tag("#{object_name}[#{field_method}(2i)]", options_for_select(month_options, selected_month),
                        prompt: prompt, class: "miti-date-select__month")
           when :day
-            day_options = (1..31).map { |d| [d.to_s.rjust(2, "0"), d] }
+            day_options = (1..32).map { |d| [d.to_s.rjust(2, "0"), d] }
             select_tag("#{object_name}[#{field_method}(3i)]", options_for_select(day_options, selected_day),
                        prompt: prompt, class: "miti-date-select__day")
           end

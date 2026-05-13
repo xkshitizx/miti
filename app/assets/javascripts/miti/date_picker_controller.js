@@ -29,7 +29,14 @@ export default class extends Controller {
     }
 
     if (this.popover) {
+      this._parseInitialDate()
+      this.view = "day"
+      this._renderPopoverContent()
       this.popover.style.display = "block"
+      this._positionPopover()
+      requestAnimationFrame(() => {
+        this._positionPopover()
+      })
       this.element.classList.add(OPEN_CLASS)
       return
     }

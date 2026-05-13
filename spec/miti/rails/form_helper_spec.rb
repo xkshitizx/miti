@@ -43,7 +43,7 @@ RSpec.describe Miti::Rails::FormHelper do
       expect(html).to include("YYYY-MM-DD")
     end
 
-    it "includes the stimilus actions" do
+    it "includes the Stimulus actions" do
       expect(html).to include("miti-date-picker")
     end
 
@@ -89,6 +89,11 @@ RSpec.describe Miti::Rails::FormHelper do
     it "includes month names" do
       expect(html).to include("Baisakh")
       expect(html).to include("बैशाख")
+    end
+
+    it "includes day option 32" do
+      expect(html).to include('value="32"')
+      expect(html).to include(">32<")
     end
 
     context "with a date attribute on the object" do
