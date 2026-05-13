@@ -12,23 +12,40 @@ module Miti
       end
 
       def nepali_date_field(object_name, method, options = {})
-        object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
-        value  = bs_value_for(object, method)
+        object      = options.delete(:object) || instance_variable_get(:"@#{object_name}")
+        default_val = options.delete(:value)
+        value       = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
+
+        actions = "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
 
         tag_options = {
           type: "text",
           autocomplete: "off",
           placeholder: "YYYY-MM-DD",
+          readonly: true,
           class: "miti-date-field",
+          value: value&.to_s,
           data: {
-            controller: "miti-date-picker",
-            "miti-date-picker-value-value": value&.to_s,
-            action: "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
+            action: actions.html_safe
           }
         }.merge(options)
-        tag_options[:value] = value&.to_s unless tag_options.key?(:value)
 
-        ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
+        input = ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
+
+        icon = tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
+          data: { action: "click->miti-date-picker#open" }) do
+          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
+            tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
+            tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
+            tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
+            tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
+          end
+        end
+
+        tag.div(class: "miti-date-field-wrapper",
+          data: { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }) do
+          input + icon
+        end
       end
 
       def nepali_date_select(object_name, method, options = {})
@@ -70,13 +87,26 @@ module Miti
         ad_date = object.public_send(method)
         return nil unless ad_date
 
-        case ad_date
+        convert_to_nepali(ad_date)
+      end
+
+      def parse_bs_value(value)
+        convert_to_nepali(value)
+      end
+
+      def convert_to_nepali(value)
+        case value
         when Date, Time, DateTime
-          Miti.to_bs(ad_date)
+          Miti.to_bs(value)
         when Miti::NepaliDate
-          ad_date
+          value
         when String
-          Miti.to_bs(Date.parse(ad_date))
+          parts = value.split(/[-\/]/)
+          if parts.length == 3
+            Miti::NepaliDate.new(barsa: parts[0].to_i, mahina: parts[1].to_i, gatey: parts[2].to_i)
+          else
+            Miti.to_bs(Date.parse(value))
+          end
         end
       rescue StandardError
         nil
