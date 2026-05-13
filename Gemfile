@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in miti.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem "rake", "~> 13.4"
 
 gem "rspec", "~> 3.0"
 
@@ -20,4 +20,4 @@ gem "simplecov"
 gem "base64", "~> 0.3"
 gem "racc", "~> 1.8"
 
-gem "docile", ">= 1.3", "< 1.4"
+gem "docile", ">= 1.3", "< 1.5"
