@@ -7,7 +7,10 @@ module Miti
   class NepaliDate
     include Comparable
 
-    class InvalidSeparatorError < StandardError; end
+    MONTHS_IN_NEPALI = %w[बैशाख जेठ असार साउन भदौ असोज कार्तिक मंसिर पुष माघ फागुन चैत].freeze
+    MONTHS_IN_ENGLISH = %w[Baisakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra].freeze
+    WEEK_DAYS_IN_NEPALI = %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार].freeze
+    WEEK_DAYS_IN_ENGLISH = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday].freeze
     attr_reader :barsa, :mahina, :gatey
 
     def <=>(other)
@@ -22,6 +25,8 @@ module Miti
       @barsa = barsa
       @mahina = mahina
       @gatey = gatey
+
+      Miti::NepaliDate::Validator.validate!(barsa, mahina, gatey)
     end
 
     ##
@@ -55,11 +60,7 @@ module Miti
     #
     # @return [String]
     def to_s(separator: "-")
-      raise InvalidSeparatorError, "Invalid separator provided." unless [" ", "/", "-"].include?(separator)
-
-      [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-        "#{final_date}#{separator unless final_date.empty?}#{0 if date_element < 10}#{date_element}"
-      end
+      Miti::NepaliDate::Formatter.new(self).to_s(separator)
     end
 
     ##
@@ -70,10 +71,10 @@ module Miti
     def descriptive(nepali: false)
       month_index = mahina - 1
       if nepali
-        month = NepaliDate.months[month_index]
-        week_day = "#{NepaliDate.week_days_in_english[bar]}(#{NepaliDate.week_days[bar]})"
+        month = MONTHS_IN_NEPALI[month_index]
+        week_day = "#{WEEK_DAYS_IN_ENGLISH[bar]}(#{WEEK_DAYS_IN_NEPALI[bar]})"
       else
-        month = NepaliDate.months_in_english[month_index]
+        month = MONTHS_IN_ENGLISH[month_index]
         week_day = tarik.strftime("%A")
       end
 
@@ -90,20 +91,20 @@ module Miti
         AdToBs.new(Date.today).convert
       end
 
-      def week_days
-        %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार]
-      end
-
       def months
-        %w[वैशाख ज्येष्ठ आषाढ़ श्रावण भाद्र आश्विन कार्तिक मंसिर पौष माघ फाल्गुण चैत्र]
+        MONTHS_IN_NEPALI
       end
 
       def months_in_english
-        %w[Baishakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra]
+        MONTHS_IN_ENGLISH
+      end
+
+      def week_days
+        WEEK_DAYS_IN_NEPALI
       end
 
       def week_days_in_english
-        %w[Aitabar Somabar Mangalbar Budhabar Bihibar Sukrabar Sanibar]
+        WEEK_DAYS_IN_ENGLISH
       end
 
       ##
@@ -111,24 +112,12 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        regex = %r{\A\d{4}[,-/\s]\d{1,2}[,-/\s]\d{1,2}\z}
-        raise "Invalid Date Format" unless regex.match(date_string)
+        parser = Miti::NepaliDate::Parser.new(date_string)
+        unless parser.date_string.match?(%r{\A\d{4}[-/]})
+          raise Miti::NepaliDate::FormatError, "Date format should be yyyy-mm-dd separated by - or /"
+        end
 
-        delimiters = ["-", " ", "/", ","]
-        barsa, mahina, gatey = date_string.split(Regexp.union(delimiters))
-        validate_parsed_date(barsa.to_i, mahina.to_i, gatey.to_i)
-        NepaliDate.new(barsa: barsa.to_i, mahina: mahina.to_i, gatey: gatey.to_i)
-      end
-
-      private
-
-      def validate_parsed_date(barsa, mahina, gatey)
-        raise "Mahina can't be greater than 12" if mahina > 12
-
-        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa]&.at(mahina - 1)
-        return unless max_day_of_month && max_day_of_month < gatey
-
-        raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
+        parser.parse
       end
     end
   end

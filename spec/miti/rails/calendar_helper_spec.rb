@@ -34,7 +34,7 @@ RSpec.describe Miti::Rails::CalendarHelper do
     end
 
     it "renders the month and year in the title" do
-      expect(html).to include("Baishakh 2080")
+      expect(html).to include("Baisakh 2080")
     end
 
     it "renders navigation links" do

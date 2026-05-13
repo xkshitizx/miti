@@ -72,8 +72,8 @@ RSpec.describe Miti::Rails::FormHelper do
     end
 
     it "includes month names" do
-      expect(html).to include("Baishakh")
-      expect(html).to include("वैशाख")
+      expect(html).to include("Baisakh")
+      expect(html).to include("बैशाख")
     end
 
     context "with a date attribute on the object" do
