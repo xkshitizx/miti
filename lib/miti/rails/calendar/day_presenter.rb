@@ -25,6 +25,10 @@ module Miti
           @date.tarik
         end
 
+        def to_ad
+          @date.tarik
+        end
+
         def sunday?
           @date.bar.zero?
         end

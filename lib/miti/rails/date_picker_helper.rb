@@ -7,7 +7,7 @@ module Miti
     module DatePickerHelper
       def include_miti_date_picker_data
         tag.script(
-          miti_calendar_data.to_json,
+          miti_calendar_data.to_json.html_safe,
           id: "miti-calendar-data",
           type: "application/json"
         )

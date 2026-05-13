@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require "rails/engine"
+
 module Miti
-  class Railtie < Rails::Railtie
+  class Engine < ::Rails::Engine
     initializer "miti.view_helpers" do
       ActiveSupport.on_load(:action_view) do
         include Miti::Rails::CalendarHelper
