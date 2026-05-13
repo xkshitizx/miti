@@ -88,6 +88,18 @@ module Miti
       @shell.say("Total: #{diff[:total_days]} days", :cyan)
     end
 
+    desc "calendar [TYPE]", "show current month's calendar (english or nepali)"
+    def calendar(type = "english")
+      case type.downcase
+      when "english", "ad"
+        english_calendar
+      when "nepali", "bs"
+        nepali_calendar
+      else
+        raise Thor::Error, "Invalid calendar type '#{type}'. Use 'english' or 'nepali'."
+      end
+    end
+
     desc "english_calendar", "show current month's english calendar"
     def english_calendar
       @shell.say(Miti::Calendar.new(shell: @shell).english_calendar)

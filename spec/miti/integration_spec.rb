@@ -46,6 +46,10 @@ RSpec.describe Miti do
     it "raises ConversionUnavailableError for out-of-range year" do
       expect { described_class.to_ad("2101-01-01") }.to raise_error(Miti::ConversionUnavailableError)
     end
+
+    it "raises ArgumentError for invalid string format" do
+      expect { described_class.to_ad("invalid") }.to raise_error(ArgumentError, "Invalid date format.")
+    end
   end
 
   describe ".to_bs and .to_ad roundtrip" do

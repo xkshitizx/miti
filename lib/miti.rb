@@ -61,8 +61,13 @@ module Miti
       case date
       when Date then date.year
       when Miti::NepaliDate then date.barsa
-      when String then date.split("-")[0].to_i
-      else date.to_s.split("-")[0].to_i
+      when String
+        matched_year = date.match(%r{\A(\d{4})[-/ ]}) || date.match(/\A(\d{4}),/)
+        raise ArgumentError, "Invalid date format." unless matched_year
+
+        matched_year[1].to_i
+      else
+        raise ArgumentError, "Invalid date format."
       end
     end
 

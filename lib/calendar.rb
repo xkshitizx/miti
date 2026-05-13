@@ -28,8 +28,8 @@ module Miti
       first_day_of_month = Miti.to_ad("#{barsa}/#{mahina}/01")
       last_day_of_month = Miti.to_ad("#{barsa}/#{mahina}/#{number_of_days}")
 
-      months = %w[Baishakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra]
-      render_calendar("Calendar for #{months[mahina - 1]} #{barsa}", first_day_of_month, last_day_of_month)
+      title = "Calendar for #{Miti::NepaliDate::MONTHS_IN_ENGLISH[mahina - 1]} #{barsa}"
+      render_calendar(title, first_day_of_month, last_day_of_month)
     end
 
     private

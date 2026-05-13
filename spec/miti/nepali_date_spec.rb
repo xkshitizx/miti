@@ -84,6 +84,10 @@ RSpec.describe Miti::NepaliDate do
       expect { described_class.parse("invalid") }.to raise_error(RuntimeError, "Invalid Date Format")
     end
 
+    it "rejects unsupported separators" do
+      expect { described_class.parse("2079.06.26") }.to raise_error(RuntimeError, "Invalid Date Format")
+    end
+
     it "raises on invalid mahina" do
       expect { described_class.parse("2079-13-01") }.to raise_error(RuntimeError, "Mahina can't be greater than 12")
     end
