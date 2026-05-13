@@ -41,7 +41,7 @@ module Miti
               raise InvalidNepaliDateError,
                     "Expected Miti::NepaliDate, String, or nil, got #{value.class}"
             end
-          rescue ArgumentError, Miti::ConversionUnavailableError => e
+          rescue ArgumentError, RuntimeError, Miti::ConversionUnavailableError => e
             raise InvalidNepaliDateError, e.message
           end
         end

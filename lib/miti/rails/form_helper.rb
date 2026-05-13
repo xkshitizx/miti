@@ -3,17 +3,19 @@
 module Miti
   module Rails
     module FormHelper
-      MONTH_OPTIONS = (1..12).map do |m|
-        english = Miti::NepaliDate::MONTHS_IN_ENGLISH[m - 1]
-        nepali  = Miti::NepaliDate::MONTHS_IN_NEPALI[m - 1]
-        ["#{english} (#{nepali})", m]
-      end.freeze
+      def month_options
+        @month_options ||= (1..12).map do |m|
+          english = Miti::NepaliDate.months_in_english[m - 1]
+          nepali  = Miti::NepaliDate.months[m - 1]
+          ["#{english} (#{nepali})", m]
+        end.freeze
+      end
 
       def nepali_date_field(object_name, method, options = {})
         object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         value  = bs_value_for(object, method)
 
-        tag_options = options.reverse_merge(
+        tag_options = {
           type: "text",
           autocomplete: "off",
           placeholder: "YYYY-MM-DD",
@@ -23,7 +25,7 @@ module Miti
             "miti-date-picker-value-value": value&.to_s,
             action: "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
           }
-        )
+        }.merge(options)
         tag_options[:value] = value&.to_s unless tag_options.key?(:value)
 
         ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
@@ -48,7 +50,7 @@ module Miti
             select_tag("#{prefix}(1i)", options_for_select(select_options, selected_year),
                        prompt: prompt, class: "miti-date-select__year")
           when :month
-            select_tag("#{prefix}(2i)", options_for_select(MONTH_OPTIONS, selected_month),
+            select_tag("#{prefix}(2i)", options_for_select(month_options, selected_month),
                        prompt: prompt, class: "miti-date-select__month")
           when :day
             day_options = (1..31).map { |d| [d.to_s.rjust(2, "0"), d] }

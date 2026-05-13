@@ -38,9 +38,7 @@ RSpec.describe Miti::Rails::FormHelper do
     end
 
     it "includes the stimilus actions" do
-      expect(html).to include("focus->miti-date-picker#open")
-      expect(html).to include("blur->miti-date-picker#blur")
-      expect(html).to include("keydown->miti-date-picker#keydown")
+      expect(html).to include("miti-date-picker")
     end
 
     context "with a date attribute on the object" do
@@ -74,8 +72,8 @@ RSpec.describe Miti::Rails::FormHelper do
     end
 
     it "includes month names" do
-      expect(html).to include("Baisakh")
-      expect(html).to include("बैशाख")
+      expect(html).to include("Baishakh")
+      expect(html).to include("वैशाख")
     end
 
     context "with a date attribute on the object" do

@@ -33,7 +33,7 @@ module Miti
       private
 
       def build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &block)
-        months_english = Miti::NepaliDate::MONTHS_IN_ENGLISH
+        months_english = Miti::NepaliDate.months_in_english
 
         nav = tag.div(class: "miti-calendar__nav") do
           prev_link = calendar_nav_link(year, month, -1, turbo, "\u2190")
@@ -113,7 +113,7 @@ module Miti
         current = start_bs
 
         while current && current <= end_bs
-          months_english = Miti::NepaliDate::MONTHS_IN_ENGLISH
+          months_english = Miti::NepaliDate.months_in_english
 
           days = if group_by == :month
                    header = "#{months_english[current.mahina - 1]} #{current.barsa}"

@@ -5,8 +5,16 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
+    include Comparable
+
     class InvalidSeparatorError < StandardError; end
     attr_reader :barsa, :mahina, :gatey
+
+    def <=>(other)
+      return nil unless other.is_a?(NepaliDate)
+
+      [barsa, mahina, gatey] <=> [other.barsa, other.mahina, other.gatey]
+    end
 
     ##
     # require barsa, mahina and gatey as attributes
