@@ -2,55 +2,106 @@
 
 module Miti
   module Generators
-    class InstallGenerator < Rails::Generators::Base
+    class InstallGenerator < ::Rails::Generators::Base
       desc "Installs Miti Rails integration: importmap pins, Stimulus controller, and stylesheets"
 
+      class_option :copy_styles,
+                   type: :boolean,
+                   default: false,
+                   desc: "Copy calendar.css into your app for easy customization (overrides gem default)"
+
       def pin_importmap
-        if File.exist?("config/importmap.rb")
-          append_to_file "config/importmap.rb" do
-            "\n# Miti: Nepali date picker\npin " \
-            "\"miti/date_picker_controller\", to: \"miti/date_picker_controller.js\"\n"
-          end
-        else
-          say "Skipping importmap: config/importmap.rb not found", :yellow
+        return unless File.exist?("config/importmap.rb")
+
+        content = <<~RUBY
+          # Miti: Nepali date picker
+          pin "miti/converter", to: "miti/converter.js"
+          pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
+        RUBY
+
+        if behavior == :revoke
+          append_to_file "config/importmap.rb", content
+        elsif !file_contains?("config/importmap.rb", content.strip)
+          append_to_file "config/importmap.rb", content
         end
       end
 
       def register_stimulus_controller
         controller_path = "app/javascript/controllers/index.js"
+        return unless File.exist?(controller_path)
 
-        if File.exist?(controller_path)
-          append_to_file controller_path do
-            "\nimport MitiDatePickerController from \"miti/date_picker_controller\"\n" \
-            "application.register(\"miti-date-picker\", MitiDatePickerController)\n"
-          end
-        else
-          say "Skipping Stimulus registration: #{controller_path} not found", :yellow
+        content = <<~JS
+          import MitiDatePickerController from "miti/date_picker_controller"
+          application.register("miti-date-picker", MitiDatePickerController)
+        JS
+
+        if behavior == :revoke
+          append_to_file controller_path, "\n#{content}"
+        elsif !file_contains?(controller_path, content.strip)
+          append_to_file controller_path, "\n#{content}"
         end
       end
 
       def add_stylesheet
+        css_path = "app/assets/stylesheets/miti/calendar.css"
+
+        if options.copy_styles?
+          create_file css_path, File.read(gem_css_path)
+          say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
+        elsif behavior == :revoke && File.exist?(css_path)
+          create_file css_path, File.read(gem_css_path)
+        end
+
         css_file = detect_css_file
         return unless css_file
 
-        append_to_file css_file do
-          "\n/* Miti: Nepali calendar and date picker styles */\n" \
-          " *= require miti/calendar\n"
+        if behavior == :revoke
+          inject_into_file css_file, before: "\n */" do
+            "\n * *= require miti/calendar"
+          end
+        elsif uses_sprockets? && !file_contains?(css_file, "require miti/calendar")
+          inject_into_file css_file, before: "\n */" do
+            "\n * *= require miti/calendar"
+          end
         end
       end
 
-      def add_date_picker_data_to_layout
+      def add_helpers_to_layout
         layout = detect_layout
         return unless layout
 
-        inject_into_file layout, before: "</head>" do
-          "\n  <%= include_miti_date_picker_data %>\n"
+        if behavior == :revoke
+          tags = "\n    <%= include_miti_date_picker_data %>"
+          tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
+          inject_into_file layout, before: "</head>" do
+            tags + "\n  "
+          end
+        elsif !file_contains?(layout, "include_miti_date_picker_data")
+          tags = "\n    <%= include_miti_date_picker_data %>"
+          tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
+          inject_into_file layout, before: "</head>" do
+            tags + "\n  "
+          end
         end
       end
 
       private
 
+      def file_contains?(path, string)
+        File.read(path).include?(string)
+      end
+
+      def gem_css_path
+        File.expand_path("../../../../app/assets/stylesheets/miti/calendar.css", __dir__)
+      end
+
+      def uses_sprockets?
+        File.exist?("Gemfile") && File.read("Gemfile").include?("sprockets-rails")
+      end
+
       def detect_css_file
+        return unless uses_sprockets?
+
         %w[
           app/assets/stylesheets/application.css
           app/assets/stylesheets/application.css.scss
