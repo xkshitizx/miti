@@ -41,6 +41,12 @@ module Miti
       Miti::BsToAd.new(date).convert
     end
 
+    ##
+    # Computes the difference between two Nepali dates.
+    #
+    # @param date1 [String] First Nepali date in YYYY-MM-DD format
+    # @param date2 [String] Second Nepali date in YYYY-MM-DD format
+    # @return [Hash] Difference with keys :years, :months, :days, :total_days
     def differentiate(date1, date2)
       first_date = Miti::NepaliDate.parse(date1)
       second_date = Miti::NepaliDate.parse(date2)

@@ -73,9 +73,19 @@ module Miti
       @shell.say(current_month_last_description, :green)
     end
 
-    desc "difference", "get remaining days for 1st of next month and last day of current month"
+    desc "difference DATE1 DATE2", "compute difference between two Nepali dates"
+    long_desc <<-DESC
+    Computes the difference between two Nepali dates and returns years, months, days, and total days.
+
+    Example: $ miti difference 2080-01-01 2080-01-15
+
+    Both dates must be in YYYY-MM-DD or YYYY/MM/DD format.
+    DESC
+
     def difference(date1, date2)
-      @shell.say(Miti.differentiate(date1, date2), :cyan)
+      diff = Miti.differentiate(date1, date2)
+      @shell.say("#{diff[:years]} years, #{diff[:months]} months, #{diff[:days]} days", :cyan)
+      @shell.say("Total: #{diff[:total_days]} days", :cyan)
     end
 
     desc "english_calendar", "show current month's english calendar"
