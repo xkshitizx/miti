@@ -5,6 +5,11 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
+    MONTHS_IN_NEPALI = %w[बैशाख जेठ असार साउन भदौ असोज कार्तिक मंसिर पुष माघ फागुन चैत].freeze
+    MONTHS_IN_ENGLISH = %w[Baisakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra].freeze
+    WEEK_DAYS_IN_NEPALI = %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार].freeze
+    WEEK_DAYS_IN_ENGLISH = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday].freeze
+
     attr_reader :barsa, :mahina, :gatey
 
     ##
@@ -56,8 +61,17 @@ module Miti
     # When nepali flag is true, month is returned in nepali font and week day in Nepali
     #
     # @return [String]
-    def descriptive(font = "english")
-      Miti::NepaliDate::Formatter.new(self).descriptive(font)
+    def descriptive(nepali: false)
+      month_index = mahina - 1
+      if nepali
+        month = MONTHS_IN_NEPALI[month_index]
+        week_day = "#{WEEK_DAYS_IN_ENGLISH[bar]}(#{WEEK_DAYS_IN_NEPALI[bar]})"
+      else
+        month = MONTHS_IN_ENGLISH[month_index]
+        week_day = tarik.strftime("%A")
+      end
+
+      "#{month} #{gatey}, #{barsa} #{week_day}"
     end
 
     def yday
@@ -75,7 +89,12 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        Miti::NepaliDate::Parser.new(date_string).parse
+        parser = Miti::NepaliDate::Parser.new(date_string)
+        unless parser.date_string.match?(%r{\A\d{4}[-/]})
+          raise Miti::NepaliDate::FormatError, "Date format should be yyyy-mm-dd separated by - or /"
+        end
+
+        parser.parse
       end
     end
   end
