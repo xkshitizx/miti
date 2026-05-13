@@ -26,8 +26,6 @@ module Miti
       validate_date_range(date: date, conversion: :to_bs)
 
       Miti::AdToBs.new(date).convert
-    rescue ArgumentError
-      "Invalid Date"
     end
 
     ##
@@ -62,7 +60,7 @@ module Miti
       when Date then date.year
       when Miti::NepaliDate then date.barsa
       when String
-        matched_year = date.match(%r{\A(\d{4})[-/, ]})
+        matched_year = date.delete(" ").match(%r{\A(\d{4})[-/]})
         raise ArgumentError, "Invalid date format." unless matched_year
 
         matched_year[1].to_i
@@ -76,7 +74,7 @@ module Miti
     # for both BS and AD
     # - For AD to BS conversion max conversion is supported upto 2044 AD
     # - For BS to AD conversion max conversion is supported upto 2100 BS
-    # @param date [Date, Miti::NepaliDate], refers to parsed date object
+    # @param date [String, Date, Time, DateTime, Miti::NepaliDate], refers to parsed date object
     # @param conversion, [Symbol], refers to the conversion either :to_ad or :to_bs
     #
     # @return ConversionUnavailableError

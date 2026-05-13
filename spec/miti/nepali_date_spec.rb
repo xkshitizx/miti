@@ -81,19 +81,23 @@ RSpec.describe Miti::NepaliDate do
     end
 
     it "raises on invalid date format" do
-      expect { described_class.parse("invalid") }.to raise_error(RuntimeError, "Invalid Date Format")
+      expect { described_class.parse("invalid") }.to raise_error(described_class::FormatError)
     end
 
     it "rejects unsupported separators" do
-      expect { described_class.parse("2079.06.26") }.to raise_error(RuntimeError, "Invalid Date Format")
+      expect { described_class.parse("2079.06.26") }.to raise_error(described_class::FormatError)
+      expect { described_class.parse("2079,06,26") }.to raise_error(described_class::FormatError)
+      expect { described_class.parse("2079 06 26") }.to raise_error(described_class::FormatError)
     end
 
     it "raises on invalid mahina" do
-      expect { described_class.parse("2079-13-01") }.to raise_error(RuntimeError, "Mahina can't be greater than 12")
+      expect { described_class.parse("2079-13-01") }
+        .to raise_error(described_class::DateRangeError, "Month should range from 1 to 12")
     end
 
     it "raises on gatey exceeding max for month" do
-      expect { described_class.parse("2079-06-32") }.to raise_error(RuntimeError, /exceeds the max/)
+      expect { described_class.parse("2079-06-32") }
+        .to raise_error(described_class::DateRangeError, /exceeds the max available gatey/)
     end
   end
 end

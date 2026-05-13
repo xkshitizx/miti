@@ -89,23 +89,12 @@ module Miti
       #
       # @return [Miti::NepaliDate]
       def parse(date_string)
-        regex = %r{\A\d{4}[-/, ]\d{1,2}[-/, ]\d{1,2}\z}
-        raise "Invalid Date Format" unless regex.match(date_string)
+        parser = Miti::NepaliDate::Parser.new(date_string)
+        unless parser.date_string.match?(%r{\A\d{4}[-/]})
+          raise Miti::NepaliDate::FormatError, "Date format should be yyyy-mm-dd separated by - or /"
+        end
 
-        barsa, mahina, gatey = date_string.split(%r{[-/, ]})
-        validate_parsed_date(barsa.to_i, mahina.to_i, gatey.to_i)
-        NepaliDate.new(barsa: barsa.to_i, mahina: mahina.to_i, gatey: gatey.to_i)
-      end
-
-      private
-
-      def validate_parsed_date(barsa, mahina, gatey)
-        raise "Mahina can't be greater than 12" if mahina > 12
-
-        max_day_of_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[barsa]&.at(mahina - 1)
-        return unless max_day_of_month && max_day_of_month < gatey
-
-        raise "Invalid date. The supplied gatey value exceeds the max available gatey for the mahina."
+        parser.parse
       end
     end
   end

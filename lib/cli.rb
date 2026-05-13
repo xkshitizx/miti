@@ -9,10 +9,11 @@ require_relative "miti/cli/next"
 module Miti
   # class to integrate CLI
   class CLI < Thor
+    CLI_DATE_ERRORS = [ArgumentError, Miti::NepaliDate::FormatError, Miti::NepaliDate::DateRangeError].freeze
+
     def initialize(*args)
       super
       @shell = Thor::Shell::Color.new
-      @output_color = :green
     end
 
     desc "today", "today's nepali miti"
@@ -37,15 +38,15 @@ module Miti
     DESC
 
     def to_bs(english_date)
+      output_color = :green
       converted_nepali_miti = Miti.to_bs(english_date)
       output_txt = "[#{converted_nepali_miti} BS] #{converted_nepali_miti.descriptive}"
-    rescue ConversionUnavailableError => e
+    rescue ConversionUnavailableError, ArgumentError => e
       output_txt = e
-      @output_color = :red
+      output_color = :red
     ensure
-      @shell.say(output_txt, @output_color)
+      @shell.say(output_txt, output_color)
     end
-
     desc "to_ad NEPALI_MITI", "converts NEPALI_MITI to English Date"
     long_desc <<-DESC
     Converts nepali miti.
@@ -57,15 +58,15 @@ module Miti
     DESC
 
     def to_ad(nepali_date)
+      output_color = :green
       converted_english_date = Miti.to_ad(nepali_date)
       output_txt = "[#{converted_english_date} AD] #{converted_english_date.strftime("%B %d, %Y %A")}"
-    rescue ConversionUnavailableError => e
+    rescue ConversionUnavailableError, *CLI_DATE_ERRORS => e
       output_txt = e
-      @output_color = :red
+      output_color = :red
     ensure
-      @shell.say(output_txt, @output_color)
+      @shell.say(output_txt, output_color)
     end
-
     desc "next", "get remaining days for 1st of next month and last day of current month"
     def next
       days_left_description, current_month_last_description = Cli::Next.new(NepaliDate.today).calculate
@@ -86,6 +87,8 @@ module Miti
       diff = Miti.differentiate(date1, date2)
       @shell.say("#{diff[:years]} years, #{diff[:months]} months, #{diff[:days]} days", :cyan)
       @shell.say("Total: #{diff[:total_days]} days", :cyan)
+    rescue ConversionUnavailableError, *CLI_DATE_ERRORS => e
+      raise Thor::Error, e.message
     end
 
     desc "calendar [TYPE]", "show current month's calendar (english or nepali)"
@@ -103,11 +106,15 @@ module Miti
     desc "english_calendar", "show current month's english calendar"
     def english_calendar
       @shell.say(Miti::Calendar.new(shell: @shell).english_calendar)
+    rescue ConversionUnavailableError, ArgumentError => e
+      raise Thor::Error, e.message
     end
 
     desc "nepali_calendar", "show current month's nepali calendar"
     def nepali_calendar
       @shell.say(Miti::Calendar.new(shell: @shell).nepali_calendar)
+    rescue ConversionUnavailableError, ArgumentError => e
+      raise Thor::Error, e.message
     end
 
     no_commands do
