@@ -9,7 +9,6 @@ module Miti
         include Miti::Rails::CalendarHelper
         include Miti::Rails::FormHelper
         include Miti::Rails::DatePickerHelper
-        ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
       end
     end
 

@@ -145,9 +145,13 @@ module Miti
 end
 
 if defined?(ActionView::Helpers::FormBuilder)
-  ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
+  unless ActionView::Helpers::FormBuilder.included_modules.include?(Miti::Rails::FormBuilderMethods)
+    ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
+  end
 elsif defined?(ActiveSupport)
   ActiveSupport.on_load(:action_view) do
-    ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
+    unless ActionView::Helpers::FormBuilder.included_modules.include?(Miti::Rails::FormBuilderMethods)
+      ActionView::Helpers::FormBuilder.include(Miti::Rails::FormBuilderMethods)
+    end
   end
 end
