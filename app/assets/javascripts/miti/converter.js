@@ -138,3 +138,6 @@ const MitiConverter = {
     return `${barsa}-${m}-${d}`
   }
 }
+
+window.MitiConverter = MitiConverter
+export default MitiConverter
