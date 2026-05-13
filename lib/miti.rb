@@ -35,8 +35,8 @@ module Miti
     # @param nepali_date [String, Miti::NepaliDate], refers to date
     # @return [<Date>], refers to the converted english date from nepali date
     def to_ad(nepali_date)
+      validate_date_range(date: nepali_date, conversion: :to_ad)
       date = parse_nepali_date(nepali_date)
-      validate_date_range(date: date, conversion: :to_ad)
 
       Miti::BsToAd.new(date).convert
     end

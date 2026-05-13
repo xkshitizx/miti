@@ -3,8 +3,8 @@
 require "date"
 require_relative "miti"
 
-# Class to render English and Nepali Calendar
 module Miti
+  # Class to render English and Nepali Calendar
   class Calendar
     attr_reader :english_date_today, :nepali_date_today
 
@@ -36,14 +36,16 @@ module Miti
 
     def render_calendar(title, first_day_of_month, last_day_of_month)
       lines = [title, "Sun Mon Tue Wed Thu Fri Sat"]
-      week = " " * (first_day_of_month.wday * 4)
+      lines += build_weeks(first_day_of_month, last_day_of_month)
+      lines.join("\n")
+    end
 
-      (first_day_of_month..last_day_of_month).each_with_index do |date, idx|
-        day_value = idx + 1
-        day = day_value.to_s.rjust(3)
-        day = colorize_today(day) if date == english_date_today
+    def build_weeks(first_day, last_day)
+      lines = []
+      week = " " * (first_day.wday * 4)
 
-        week += day
+      (first_day..last_day).each_with_index do |date, idx|
+        week += format_day(idx + 1, date)
         if date.wday == 6
           lines << week.rstrip
           week = ""
@@ -53,11 +55,16 @@ module Miti
       end
 
       lines << week.rstrip unless week.empty?
-      lines.join("\n")
+      lines
+    end
+
+    def format_day(day_value, date)
+      day = day_value.to_s.rjust(3)
+      date == english_date_today ? colorize_today(day) : day
     end
 
     def colorize_today(day)
-      return day unless @shell&.respond_to?(:set_color)
+      return day unless @shell.respond_to?(:set_color)
 
       @shell.set_color(day, :green, true)
     end

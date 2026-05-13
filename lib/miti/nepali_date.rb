@@ -5,6 +5,11 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
+    MONTHS_IN_NEPALI = %w[बैशाख जेठ असार साउन भदौ असोज कार्तिक मंसिर पुष माघ फागुन चैत].freeze
+    MONTHS_IN_ENGLISH = %w[Baisakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra].freeze
+    WEEK_DAYS_IN_NEPALI = %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार].freeze
+    WEEK_DAYS_IN_ENGLISH = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday].freeze
+
     attr_reader :barsa, :mahina, :gatey
 
     ##
@@ -59,10 +64,10 @@ module Miti
     def descriptive(nepali: false)
       month_index = mahina - 1
       if nepali
-        month = NepaliDate.months[month_index]
-        week_day = "#{NepaliDate.week_days_in_english[bar]}(#{NepaliDate.week_days[bar]})"
+        month = MONTHS_IN_NEPALI[month_index]
+        week_day = "#{WEEK_DAYS_IN_ENGLISH[bar]}(#{WEEK_DAYS_IN_NEPALI[bar]})"
       else
-        month = NepaliDate.months_in_english[month_index]
+        month = MONTHS_IN_ENGLISH[month_index]
         week_day = tarik.strftime("%A")
       end
 
