@@ -20,8 +20,8 @@ RSpec.describe Miti do
       expect(result.to_s).to eq("2079-06-26")
     end
 
-    it "returns error string for invalid date" do
-      expect(described_class.to_bs("not-a-date")).to eq("Invalid Date")
+    it "raises ArgumentError for invalid date format" do
+      expect { described_class.to_bs("not-a-date") }.to raise_error(ArgumentError)
     end
 
     it "raises ConversionUnavailableError for out-of-range year" do
@@ -45,6 +45,10 @@ RSpec.describe Miti do
 
     it "raises ConversionUnavailableError for out-of-range year" do
       expect { described_class.to_ad("2101-01-01") }.to raise_error(Miti::ConversionUnavailableError)
+    end
+
+    it "raises ArgumentError for invalid string format" do
+      expect { described_class.to_ad("invalid") }.to raise_error(ArgumentError, "Invalid date format.")
     end
   end
 
