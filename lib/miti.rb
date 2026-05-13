@@ -110,3 +110,12 @@ module Miti
     end
   end
 end
+
+if defined?(Rails)
+  require_relative "miti/rails/calendar/day_presenter"
+  require_relative "miti/rails/calendar_helper"
+  require_relative "miti/rails/form_helper"
+  require_relative "miti/rails/date_picker_helper"
+  require_relative "miti/rails/model_concern"
+  require_relative "miti/railtie"
+end
