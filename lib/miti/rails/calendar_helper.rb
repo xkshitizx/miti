@@ -5,8 +5,8 @@ module Miti
     module CalendarHelper
       def nepali_calendar(options = {}, &)
         today = options[:today] || Date.today
-        year  = options[:year]  || Miti::NepaliDate.today.barsa
-        month = options[:month] || Miti::NepaliDate.today.mahina
+        year  = resolve_calendar_year(options)
+        month = resolve_calendar_month(options)
         turbo = options.key?(:turbo_frame) ? options[:turbo_frame] : "nepali_calendar"
         html  = options[:html] || {}
 
@@ -31,6 +31,14 @@ module Miti
       end
 
       private
+
+      def resolve_calendar_year(options)
+        options[:year] || params[:bs_year]&.to_i || Miti::NepaliDate.today.barsa
+      end
+
+      def resolve_calendar_month(options)
+        options[:month] || params[:bs_month]&.to_i || Miti::NepaliDate.today.mahina
+      end
 
       def build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &block)
         months_english = Miti::NepaliDate.months_in_english
