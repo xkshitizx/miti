@@ -49,7 +49,7 @@ const MitiConverter = {
     const date = new Date(year, month - 1, day)
     const start = new Date(year, 0, 0)
     const diff = date - start
-    return Math.floor(diff / (1000 * 60 * 60 * 24))
+    return Math.round(diff / (1000 * 60 * 60 * 24))
   },
 
   bsToAd(barsa, mahina, gatey) {

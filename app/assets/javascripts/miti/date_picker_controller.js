@@ -175,6 +175,7 @@ export default class extends Controller {
 
     if (!this.currentYear || !this.currentMonth) {
       const today = MitiConverter.today()
+      if (!today) return
       this.currentYear = today.barsa
       this.currentMonth = today.mahina
     }
