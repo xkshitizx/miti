@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.1
   NewCops: enable
   SuggestExtensions: false
   Exclude:
@@ -7,6 +7,19 @@ AllCops:
     - "vendor/bundle/**/*"
     - "bin/**/*"
     - "node_modules/**/*"
+    - "tmp/**/*"
+
+Style/Documentation:
+  Enabled: false
+
+Style/OneClassPerFile:
+  Enabled: false
+
+Naming/PredicatePrefix:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: true
@@ -19,6 +32,12 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
+Metrics/ModuleLength:
+  Max: 200
+
+Metrics/ParameterLists:
+  Max: 7
+
 Metrics/BlockLength:
   Max: 120
   Exclude: 
@@ -27,11 +46,20 @@ Metrics/BlockLength:
     - "lib/miti/data/date_data.rb"
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 30
   Exclude:
     - "lib/miti/data/date_data.rb"
 
 Metrics/ClassLength:
-  Max: 100
+  Max: 120
   Exclude:
     - "lib/miti/data/date_data.rb"
+
+Metrics/AbcSize:
+  Max: 35
+
+Metrics/CyclomaticComplexity:
+  Max: 12
+
+Metrics/PerceivedComplexity:
+  Max: 10

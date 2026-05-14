@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Date converter BS to AD and vice-versa."
   spec.description = "Convert English date(AD) to Nepali date(BS) and vice-versa."
   spec.homepage = "https://github.com/xkshitizx/miti"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = [">= 3.1", "< 5.0"]
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -18,7 +18,9 @@ Gem::Specification.new do |spec|
                    "CHANGELOG.md", "lib/**/*.rb",
                    "lib/**/*.rake", "docs/*.md",
                    "miti.gemspec", ".github/*.md",
-                   "Gemfile", "Rakefile"]
+                   "Gemfile", "Rakefile",
+                   "lib/generators/**/*",
+                   "app/assets/**/*"]
   spec.metadata = {
     # "allowed_push_host" = "TODO: Set to your gem server 'https://example.com'",
     "bug_tracker_uri" => "https://github.com/xkshitizx/miti/issues",
@@ -33,7 +35,8 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
 
   spec.add_dependency "thor", "~> 1.2", ">= 1.2.2"
-  # Uncomment to register a new dependency of your gem
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
+
+  spec.add_development_dependency "actionview", ">= 6.1"
+  spec.add_development_dependency "activerecord", ">= 6.1"
+  spec.add_development_dependency "railties", ">= 6.1"
 end

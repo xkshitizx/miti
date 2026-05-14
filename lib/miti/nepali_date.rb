@@ -5,12 +5,19 @@ require_relative "data/date_data"
 module Miti
   # Class for nepali date
   class NepaliDate
+    include Comparable
+
     MONTHS_IN_NEPALI = %w[बैशाख जेठ असार साउन भदौ असोज कार्तिक मंसिर पुष माघ फागुन चैत].freeze
     MONTHS_IN_ENGLISH = %w[Baisakh Jestha Ashadh Shrawan Bhadra Asoj Kartik Mangsir Poush Magh Falgun Chaitra].freeze
     WEEK_DAYS_IN_NEPALI = %w[आइतबार सोमबार मंगलबार बुधबार बिहिबार शुक्रबार शनिबार].freeze
     WEEK_DAYS_IN_ENGLISH = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday].freeze
-
     attr_reader :barsa, :mahina, :gatey
+
+    def <=>(other)
+      return nil unless other.is_a?(NepaliDate)
+
+      [barsa, mahina, gatey] <=> [other.barsa, other.mahina, other.gatey]
+    end
 
     ##
     # require barsa, mahina and gatey as attributes
@@ -82,6 +89,22 @@ module Miti
     class << self
       def today
         AdToBs.new(Date.today).convert
+      end
+
+      def months
+        MONTHS_IN_NEPALI
+      end
+
+      def months_in_english
+        MONTHS_IN_ENGLISH
+      end
+
+      def week_days
+        WEEK_DAYS_IN_NEPALI
+      end
+
+      def week_days_in_english
+        WEEK_DAYS_IN_ENGLISH
       end
 
       ##

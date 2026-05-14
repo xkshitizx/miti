@@ -1,0 +1,15 @@
+Description:
+    Install Miti Rails integration
+
+    This generator adds the necessary configuration to use Miti's Nepali
+    calendar helpers, form helpers, date picker, and model concern in
+    your Rails application.
+
+    It will:
+      1. Pin the Stimulus date picker controller in config/importmap.rb
+      2. Register the Stimulus controller in app/javascript/controllers/index.js
+      3. Add the Miti stylesheet to your application CSS
+      4. Add the calendar data script tag to your application layout
+
+Example:
+    bin/rails generate miti:install

@@ -15,7 +15,7 @@ module Miti
 
       def compare
         %w[barsa mahina gatey].each do |date_unit|
-          return send("assign_by_#{date_unit}".to_sym) if date1.send(date_unit.to_sym) != date2.send(date_unit.to_sym)
+          return send(:"assign_by_#{date_unit}") if date1.send(date_unit.to_sym) != date2.send(date_unit.to_sym)
         end
         { greater_date: date1, smaller_date: date2, remarks: "Equal dates" }
       end

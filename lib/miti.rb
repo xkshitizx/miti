@@ -99,11 +99,9 @@ module Miti
     # @param english_date [Date], refers to date object
     # @return [<Date>], refers to Date object
     def parse_english_date(english_date)
-      klass = english_date.class.to_s
-
-      if %w[Time DateTime].include?(klass)
+      if english_date.is_a?(Time) || english_date.is_a?(DateTime)
         english_date.to_date
-      elsif klass == "String"
+      elsif english_date.is_a?(String)
         Date.parse(english_date)
       else
         english_date
@@ -129,4 +127,13 @@ module Miti
       end
     end
   end
+end
+
+if defined?(Rails)
+  require_relative "miti/rails/calendar/day_presenter"
+  require_relative "miti/rails/calendar_helper"
+  require_relative "miti/rails/form_helper"
+  require_relative "miti/rails/date_picker_helper"
+  require_relative "miti/rails/model_concern"
+  require_relative "miti/railtie"
 end

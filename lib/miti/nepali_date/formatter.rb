@@ -35,7 +35,7 @@ module Miti
         raise InvalidSeparatorError, "Invalid separator provided." unless VALID_SEPERATORS.include?(separator)
 
         [barsa, mahina, gatey].reduce("") do |final_date, date_element|
-          "#{final_date}#{final_date.empty? ? "" : separator}#{date_element < 10 ? 0 : ""}#{date_element}"
+          "#{final_date}#{separator unless final_date.empty?}#{0 if date_element < 10}#{date_element}"
         end
       end
 
@@ -45,7 +45,7 @@ module Miti
       #
       # @return [String]
       def descriptive(font)
-        return send("descriptive_#{font}".to_sym) if VALID_FONTS.include?(font)
+        return send(:"descriptive_#{font}") if VALID_FONTS.include?(font)
 
         raise InvalidFontError, "Invalid font provided. only english or nepali is allowed"
       end
