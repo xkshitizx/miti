@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-14
+
 ### Rails integration
 - Add `Miti::Engine` (Rails Engine) for auto-exposing `app/assets` paths
 - Add `nepali_calendar` helper for monthly grid view with Turbo Frame nav
