@@ -18,7 +18,7 @@ module Miti
       end
     end
 
-    if respond_to?(:config) && config.respond_to?(:assets)
+    if defined?(Sprockets) && respond_to?(:config) && config.respond_to?(:assets)
       initializer "miti.assets" do
         config.assets.precompile += %w[
           miti/calendar.css

@@ -13,6 +13,17 @@ export default class extends Controller {
     this.view = "day"
     this.input = this.element.querySelector(".miti-date-field")
     this.blurTimeout = null
+    if (!this.input) {
+      console.warn("Miti Date Picker: missing .miti-date-field inside controller element")
+    }
+  }
+
+  _ensureInput() {
+    if (!this.input) {
+      console.warn("Miti Date Picker: cannot proceed without .miti-date-field")
+      return false
+    }
+    return true
   }
 
   disconnect() {
@@ -24,6 +35,7 @@ export default class extends Controller {
   }
 
   open(event) {
+    if (!this._ensureInput()) return
     if (event && event.type === "focus") {
       this._clearBlurTimeout()
     }
@@ -71,6 +83,7 @@ export default class extends Controller {
   }
 
   keydown(event) {
+    if (!this._ensureInput()) return
     switch (event.key) {
       case "Escape":
         if (this.view !== "day") {
@@ -343,7 +356,7 @@ export default class extends Controller {
   }
 
   _positionPopover() {
-    if (!this.popover) return
+    if (!this.popover || !this._ensureInput()) return
     const rect = this.input.getBoundingClientRect()
     const popoverWidth = this.popover.offsetWidth || 280
     const popoverHeight = this.popover.offsetHeight || 300

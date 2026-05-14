@@ -6,11 +6,14 @@ module Miti
       def nepali_calendar(options = {}, &)
         today = options[:today] || Date.today
         year  = resolve_calendar_year(options)
-        month = resolve_calendar_month(options)
+        month = resolve_calendar_month(options).clamp(1, 12)
         turbo = options.key?(:turbo_frame) ? options[:turbo_frame] : "nepali_calendar"
         html  = options[:html] || {}
 
-        days_in_month = Miti::Data::NEPALI_YEAR_MONTH_HASH[year][month - 1]
+        year_data = Miti::Data::NEPALI_YEAR_MONTH_HASH[year]
+        raise ArgumentError, "Year #{year} is outside the supported range (1975-2100)" unless year_data
+
+        days_in_month = year_data[month - 1]
         first_day_ad  = Miti.to_ad("#{year}/#{month}/01")
         start_wday    = first_day_ad.wday
 
@@ -39,11 +42,11 @@ module Miti
       private
 
       def resolve_calendar_year(options)
-        options[:year] || params[:bs_year]&.to_i || Miti::NepaliDate.today.barsa
+        options[:year] || (defined?(params) && params[:bs_year]&.to_i) || Miti::NepaliDate.today.barsa
       end
 
       def resolve_calendar_month(options)
-        options[:month] || params[:bs_month]&.to_i || Miti::NepaliDate.today.mahina
+        options[:month] || (defined?(params) && params[:bs_month]&.to_i) || Miti::NepaliDate.today.mahina
       end
 
       def build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &block)
