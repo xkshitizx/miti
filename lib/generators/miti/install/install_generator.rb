@@ -13,13 +13,14 @@ module Miti
       class_option :copy_javascript,
                    type: :boolean,
                    default: false,
-                   desc: "Copy JS files into app/javascript/miti/ for bundler setup (auto-detected when no importmap)"
+                   desc: "Force copy JS files into app/javascript/miti/ for bundler setup"
 
       def pin_or_copy_javascript
         if importmap?
           pin_importmap
         else
           copy_javascript_files
+          pin_importmap if File.exist?("config/importmap.rb")
         end
       end
 
@@ -134,7 +135,22 @@ module Miti
       end
 
       def importmap?
-        options[:copy_javascript] ? false : File.exist?("config/importmap.rb")
+        !uses_bundler? && File.exist?("config/importmap.rb")
+      end
+
+      def uses_bundler?
+        return true if options[:copy_javascript]
+        return false unless File.exist?("package.json")
+
+        pkg = JSON.parse(File.read("package.json"))
+        scripts = pkg.fetch("scripts", {})
+        scripts.values.any? { |s| esbuild?(s) || s.include?("webpack") || s.include?("rollup") || s.include?("vite") }
+      rescue JSON::ParserError
+        false
+      end
+
+      def esbuild?(script)
+        script.include?("esbuild") || script.include?("build --js")
       end
 
       def ensure_stimulus_package
