@@ -212,7 +212,10 @@ module Miti
       end
 
       def next_bs_day(date)
-        max_day = Miti::Data::NEPALI_YEAR_MONTH_HASH[date.barsa][date.mahina - 1]
+        year_data = Miti::Data::NEPALI_YEAR_MONTH_HASH[date.barsa]
+        return date unless year_data
+
+        max_day = year_data[date.mahina - 1]
         if date.gatey < max_day
           Miti::NepaliDate.new(barsa: date.barsa, mahina: date.mahina, gatey: date.gatey + 1)
         elsif date.mahina < 12
