@@ -303,6 +303,16 @@
   color: #ef4444;
 }
 
+.miti-date-picker__day--selected.miti-date-picker__day--sun,
+.miti-date-picker__day--selected.miti-date-picker__day--sat {
+  color: white;
+}
+
+.miti-date-picker__day--selected.miti-date-picker__day--sun:hover,
+.miti-date-picker__day--selected.miti-date-picker__day--sat:hover {
+  color: white;
+}
+
 .miti-date-picker__day--other {
   color: #d1d5db;
   cursor: default;
