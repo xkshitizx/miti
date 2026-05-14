@@ -95,18 +95,24 @@ module Miti
       def pin_importmap
         return unless File.exist?("config/importmap.rb")
 
-        content = <<~RUBY
-          # Miti: Nepali date picker
-          pin "miti/converter", to: "miti/converter.js"
-          pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
-        RUBY
         if behavior == :revoke
-          gsub_file "config/importmap.rb", /\n?#{Regexp.escape(content)}/, ""
+          gsub_file "config/importmap.rb", %r{\n# Miti: Nepali date picker\npin "miti/converter".*}, ""
+          gsub_file "config/importmap.rb", %r{\npin "miti/date_picker_controller".*}, ""
           return
         end
-        return if file_contains?("config/importmap.rb", content.strip)
 
-        append_to_file "config/importmap.rb", content
+        unless file_contains?("config/importmap.rb", 'pin "miti/converter"')
+          append_to_file "config/importmap.rb", <<~RUBY
+            # Miti: Nepali date picker
+            pin "miti/converter", to: "miti/converter.js"
+            pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
+          RUBY
+        end
+
+        return if file_contains?("config/importmap.rb", '"@hotwired/stimulus"')
+
+        append_to_file "config/importmap.rb",
+                       "pin \"@hotwired/stimulus\", to: \"stimulus.min.js\"\n"
       end
 
       def copy_javascript_files
@@ -118,6 +124,8 @@ module Miti
           return
         end
 
+        ensure_stimulus_package
+
         empty_directory js_dir
         copy_file gem_asset_path("converter.js"), "#{js_dir}/converter.js"
         content = File.read(gem_asset_path("date_picker_controller.js"))
@@ -127,6 +135,30 @@ module Miti
 
       def importmap?
         options[:copy_javascript] ? false : File.exist?("config/importmap.rb")
+      end
+
+      def ensure_stimulus_package
+        return unless File.exist?("package.json")
+
+        pkg = JSON.parse(File.read("package.json"))
+        deps = pkg.fetch("dependencies", {})
+        dev_deps = pkg.fetch("devDependencies", {})
+        return if deps.key?("@hotwired/stimulus") || dev_deps.key?("@hotwired/stimulus")
+
+        say "Adding @hotwired/stimulus JavaScript package...", :green
+        run package_manager_add_command
+      end
+
+      def package_manager_add_command
+        if File.exist?("yarn.lock")
+          "yarn add @hotwired/stimulus"
+        elsif File.exist?("pnpm-lock.yaml")
+          "pnpm add @hotwired/stimulus"
+        elsif File.exist?("bun.lockb")
+          "bun add @hotwired/stimulus"
+        else
+          "npm install @hotwired/stimulus --no-audit --no-fund"
+        end
       end
 
       def file_contains?(path, string)
