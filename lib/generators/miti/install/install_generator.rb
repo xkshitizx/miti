@@ -3,41 +3,35 @@
 module Miti
   module Generators
     class InstallGenerator < ::Rails::Generators::Base
-      desc "Installs Miti Rails integration: importmap pins, Stimulus controller, and stylesheets"
+      desc "Installs Miti Rails integration: importmap/bundler JS, Stimulus controller, and stylesheets"
 
       class_option :copy_styles,
                    type: :boolean,
                    default: false,
                    desc: "Copy calendar.css into your app for easy customization (overrides gem default)"
 
-      def pin_importmap
-        return unless File.exist?("config/importmap.rb")
+      class_option :copy_javascript,
+                   type: :boolean,
+                   default: false,
+                   desc: "Copy JS files into app/javascript/miti/ for bundler setup (auto-detected when no importmap)"
 
-        content = <<~RUBY
-          # Miti: Nepali date picker
-          pin "miti/converter", to: "miti/converter.js"
-          pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
-        RUBY
-
-        if behavior == :revoke
-          gsub_file "config/importmap.rb", /\n?#{Regexp.escape(content)}/, ""
-          return
+      def pin_or_copy_javascript
+        if importmap?
+          pin_importmap
+        else
+          copy_javascript_files
         end
-
-        return if file_contains?("config/importmap.rb", content.strip)
-
-        append_to_file "config/importmap.rb", content
       end
 
       def register_stimulus_controller
         controller_path = "app/javascript/controllers/index.js"
         return unless File.exist?(controller_path)
 
+        import_path = importmap? ? "miti/date_picker_controller" : "../miti/date_picker_controller"
         content = <<~JS
-          import MitiDatePickerController from "miti/date_picker_controller"
+          import MitiDatePickerController from "#{import_path}"
           application.register("miti-date-picker", MitiDatePickerController)
         JS
-
         if behavior == :revoke
           gsub_file controller_path, /\n?#{Regexp.escape(content)}/, ""
           return
@@ -50,19 +44,18 @@ module Miti
 
       def add_stylesheet
         css_path = "app/assets/stylesheets/miti/calendar.css"
-
         if options.copy_styles?
           if behavior == :revoke
             remove_file css_path if File.exist?(css_path)
           else
-            create_file css_path, File.read(gem_css_path)
+            create_file css_path,
+                        File.read(File.expand_path("../../../../app/assets/stylesheets/miti/calendar.css", __dir__))
             say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
           end
         end
 
         css_file = detect_css_file
         return unless css_file
-
         return unless uses_sprockets?
 
         if behavior == :revoke
@@ -99,12 +92,49 @@ module Miti
 
       private
 
+      def pin_importmap
+        return unless File.exist?("config/importmap.rb")
+
+        content = <<~RUBY
+          # Miti: Nepali date picker
+          pin "miti/converter", to: "miti/converter.js"
+          pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
+        RUBY
+        if behavior == :revoke
+          gsub_file "config/importmap.rb", /\n?#{Regexp.escape(content)}/, ""
+          return
+        end
+        return if file_contains?("config/importmap.rb", content.strip)
+
+        append_to_file "config/importmap.rb", content
+      end
+
+      def copy_javascript_files
+        js_dir = "app/javascript/miti"
+        if behavior == :revoke
+          remove_file "#{js_dir}/converter.js"
+          remove_file "#{js_dir}/date_picker_controller.js"
+          FileUtils.rmdir(js_dir) if File.directory?(js_dir)
+          return
+        end
+
+        empty_directory js_dir
+        copy_file gem_asset_path("converter.js"), "#{js_dir}/converter.js"
+        content = File.read(gem_asset_path("date_picker_controller.js"))
+                      .gsub('"miti/converter"', '"./converter"')
+        create_file "#{js_dir}/date_picker_controller.js", content
+      end
+
+      def importmap?
+        options[:copy_javascript] ? false : File.exist?("config/importmap.rb")
+      end
+
       def file_contains?(path, string)
         File.read(path).include?(string)
       end
 
-      def gem_css_path
-        File.expand_path("../../../../app/assets/stylesheets/miti/calendar.css", __dir__)
+      def gem_asset_path(filename)
+        File.expand_path("../../../../app/assets/javascripts/miti/#{filename}", __dir__)
       end
 
       def uses_sprockets?

@@ -8,10 +8,14 @@ Run the installer generator:
 
     $ rails generate miti:install
 
-This will:
-- Pin `miti/converter` and `miti/date_picker_controller` in your `importmap.rb`
-- Register the `miti-date-picker` Stimulus controller
-- Add `include_miti_date_picker_data` and stylesheet link to your layout
+The generator auto-detects your JavaScript setup:
+
+- **Importmap** (default Rails 7+): pins `miti/converter` and `miti/date_picker_controller` in `config/importmap.rb`
+- **esbuild / webpack / other bundler** (no `config/importmap.rb`): copies the JS files into `app/javascript/miti/` so your bundler can resolve them
+
+To force file copy even with importmap (e.g., to customize the JS):
+
+    $ rails generate miti:install --copy-javascript
 
 To customize the calendar styles, copy them into your app:
 
