@@ -92,7 +92,7 @@ module Miti
 
         return if file_contains?(layout, "include_miti_date_picker_data")
 
-        inject_into_file layout, before: "</head>" do
+        inject_into_file layout, before: %r{</head>}i do
           "#{tags}\n  "
         end
       end
