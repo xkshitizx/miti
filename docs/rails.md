@@ -63,13 +63,29 @@ This defines:
 
 ### Calendar
 
+Renders a monthly grid table with navigation links. Navigation uses Turbo Frames by default — prev/next links update `?bs_year=` and `?bs_month=` query params, and the helper reads them to determine the displayed month.
+
 ```erb
+<%# Current BS month (no arguments) %>
+<%= nepali_calendar %>
+
+<%# Specific month with block for custom day content %>
 <%= nepali_calendar(year: 2082, month: 1) do |day| %>
   <%= day.gatey %>
 <% end %>
 ```
 
-Renders a monthly grid table with navigation links. Navigation uses Turbo Frames by default.
+The title shows the Nepali month name followed by the corresponding English month abbreviation in brackets, e.g. **Baisakh *(Apr-May)* 2083**.
+
+Options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `year` | current BS year | |
+| `month` | current BS month | |
+| `turbo_frame` | `"nepali_calendar"` | Turbo Frame ID; pass `nil` to disable frame wrapping |
+| `html` | `{}` | Custom HTML attributes merged onto the `<table>` |
+| `today` | `Date.today` | Override the "today" reference date |
 
 ### Agenda view
 

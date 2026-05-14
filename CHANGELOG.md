@@ -27,6 +27,13 @@
 - Date comparison extracted into `Miti::NepaliDate::Comparison`
 - Date difference extracted into `Miti::NepaliDate::Difference`
 
+### Bug fixes
+- Fix `turbo_frame_tag` content not rendering — use block form instead of positional argument (turbo-rails uses `*ids` splat)
+- Fix rubocop offenses (ABC size, unused kw args, module length)
+
+### Enhancements
+- Calendar title now shows English month abbreviation range in brackets, e.g. `Baisakh (Apr-May) 2083`, styled non-bold/italic
+
 ### Dev & CI
 - Bump development Ruby to 4.0.3
 - Bump `required_ruby_version` to `>= 3.1, < 5.0`
