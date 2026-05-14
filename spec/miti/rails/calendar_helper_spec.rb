@@ -22,8 +22,9 @@ class CalendarTestView < ActionView::Base
     nil
   end
 
-  def turbo_frame_tag(id, content = nil, &block)
-    inner = block ? capture(&block) : content
+  def turbo_frame_tag(*ids, src: nil, target: nil, **attributes, &block)
+    id = ids.join("_")
+    inner = block ? capture(&block) : nil
     %(<turbo-frame id="#{id}">#{inner}</turbo-frame>).html_safe
   end
 end
@@ -38,8 +39,10 @@ RSpec.describe Miti::Rails::CalendarHelper do
       expect(html).to include('class="miti-calendar"')
     end
 
-    it "renders the month and year in the title" do
-      expect(html).to include("Baisakh 2080")
+    it "renders the month, English month range, and year in the title" do
+      expect(html).to include("Baisakh")
+      expect(html).to include("Apr-May")
+      expect(html).to include("2080")
     end
 
     it "renders navigation links" do

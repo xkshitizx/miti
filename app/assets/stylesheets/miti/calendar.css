@@ -82,6 +82,12 @@
   color: #111827;
 }
 
+.miti-calendar__title em {
+  font-weight: 400;
+  font-style: italic;
+  color: #6b7280;
+}
+
 .miti-calendar__nav-link {
   text-decoration: none;
   font-size: 18px;

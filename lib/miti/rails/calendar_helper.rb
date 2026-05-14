@@ -21,7 +21,7 @@ module Miti
         return content unless turbo
 
         if respond_to?(:turbo_frame_tag)
-          turbo_frame_tag(turbo, content)
+          turbo_frame_tag(turbo) { content }
         else
           tag.div(content, data: { turbo_frame: turbo })
         end
@@ -55,7 +55,13 @@ module Miti
         nav = tag.div(class: "miti-calendar__nav") do
           prev_link = calendar_nav_link(year, month, -1, turbo, "\u2190")
           next_link = calendar_nav_link(year, month, 1, turbo, "\u2192")
-          title     = tag.span("#{months_english[month - 1]} #{year}", class: "miti-calendar__title")
+          title     = tag.span(class: "miti-calendar__title") do
+            safe_join([
+              "#{months_english[month - 1]} ",
+              tag.em("(#{english_month_range(year, month)})"),
+              " #{year}"
+            ])
+          end
           safe_join([prev_link, title, next_link])
         end
 
@@ -74,6 +80,20 @@ module Miti
         end
 
         safe_join([nav, table])
+      end
+
+      def english_month_range(year, month)
+        year_data = Miti::Data::NEPALI_YEAR_MONTH_HASH[year]
+        return "" unless year_data
+
+        days_in_month = year_data[month - 1]
+        first_ad = Miti.to_ad("#{year}/#{month}/01")
+        last_ad  = Miti.to_ad("#{year}/#{month}/#{days_in_month}")
+
+        first_abbr = first_ad.strftime("%b")
+        last_abbr  = last_ad.strftime("%b")
+
+        first_abbr == last_abbr ? first_abbr : "#{first_abbr}-#{last_abbr}"
       end
 
       def build_weeks(year, month, days_in_month, start_wday, today, &block)
