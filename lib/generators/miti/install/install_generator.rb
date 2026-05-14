@@ -128,7 +128,7 @@ module Miti
         ensure_stimulus_package
 
         empty_directory js_dir
-        copy_file gem_asset_path("converter.js"), "#{js_dir}/converter.js"
+        create_file "#{js_dir}/converter.js", File.read(gem_asset_path("converter.js"))
         content = File.read(gem_asset_path("date_picker_controller.js"))
                       .gsub('"miti/converter"', '"./converter"')
         create_file "#{js_dir}/date_picker_controller.js", content
