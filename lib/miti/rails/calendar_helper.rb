@@ -17,7 +17,10 @@ module Miti
         first_day_ad  = Miti.to_ad("#{year}/#{month}/01")
         start_wday    = first_day_ad.wday
 
-        content = build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &)
+        content = safe_join([
+                              build_nav(year, month, turbo),
+                              build_table(html, year, month, days_in_month, start_wday, today, &)
+                            ])
         return content unless turbo
 
         if respond_to?(:turbo_frame_tag)
@@ -49,26 +52,27 @@ module Miti
         options[:month] || (defined?(params) && params[:bs_month]&.to_i) || Miti::NepaliDate.today.mahina
       end
 
-      def build_calendar(year, month, days_in_month, start_wday, today, turbo, html, &block)
+      def build_nav(year, month, turbo)
         months_english = Miti::NepaliDate.months_in_english
 
-        nav = tag.div(class: "miti-calendar__nav") do
+        tag.div(class: "miti-calendar__nav") do
           prev_link = calendar_nav_link(year, month, -1, turbo, "\u2190")
           next_link = calendar_nav_link(year, month, 1, turbo, "\u2192")
           title     = tag.span(class: "miti-calendar__title") do
             safe_join([
-              "#{months_english[month - 1]} ",
-              tag.em("(#{english_month_range(year, month)})"),
-              " #{year}"
-            ])
+                        "#{months_english[month - 1]} ",
+                        tag.em("(#{english_month_range(year, month)})"),
+                        " #{year}"
+                      ])
           end
           safe_join([prev_link, title, next_link])
         end
+      end
 
+      def build_table(html, year, month, days_in_month, start_wday, today, &block)
         table_html = html.to_h
         table_html[:class] = [table_html[:class], "miti-calendar"].compact.join(" ")
-
-        table = tag.table(**table_html) do
+        tag.table(**table_html) do
           safe_join([
                       tag.thead(tag.tr(safe_join(
                                          %w[Sun Mon Tue Wed Thu Fri Sat].map do |d|
@@ -78,8 +82,6 @@ module Miti
                       tag.tbody(safe_join(build_weeks(year, month, days_in_month, start_wday, today, &block)))
                     ])
         end
-
-        safe_join([nav, table])
       end
 
       def english_month_range(year, month)

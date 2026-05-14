@@ -22,7 +22,7 @@ class CalendarTestView < ActionView::Base
     nil
   end
 
-  def turbo_frame_tag(*ids, src: nil, target: nil, **attributes, &block)
+  def turbo_frame_tag(*ids, _src: nil, _target: nil, **_attributes, &block)
     id = ids.join("_")
     inner = block ? capture(&block) : nil
     %(<turbo-frame id="#{id}">#{inner}</turbo-frame>).html_safe
