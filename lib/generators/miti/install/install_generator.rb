@@ -44,17 +44,29 @@ module Miti
       end
 
       def add_stylesheet
+        copy_css_to_app if options.copy_styles? || uses_bundler?
+        add_sprockets_require
+      end
+
+      private
+
+      def copy_css_to_app
+        css_source = File.expand_path("../../../../app/assets/stylesheets/miti/calendar.css", __dir__)
         css_path = "app/assets/stylesheets/miti/calendar.css"
-        if options.copy_styles?
-          if behavior == :revoke
-            remove_file css_path if File.exist?(css_path)
-          else
-            create_file css_path,
-                        File.read(File.expand_path("../../../../app/assets/stylesheets/miti/calendar.css", __dir__))
+
+        if behavior == :revoke
+          remove_file css_path if File.exist?(css_path)
+        else
+          create_file css_path, File.read(css_source)
+          if options.copy_styles?
             say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
+          else
+            say "Copied calendar.css to app/assets/stylesheets/miti/ for bundler setup", :green
           end
         end
+      end
 
+      def add_sprockets_require
         css_file = detect_css_file
         return unless css_file
         return unless uses_sprockets?
@@ -70,6 +82,8 @@ module Miti
           "\n * *= require miti/calendar"
         end
       end
+
+      public
 
       def add_helpers_to_layout
         layout = detect_layout
