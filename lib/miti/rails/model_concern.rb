@@ -88,10 +88,12 @@ module Miti
           return unless respond_to?(:before_validation)
 
           before_validation do
-            raw_bs = instance_variable_get(:"@_miti_raw_bs_#{attr}")
             ad_val = public_send(attr)
 
-            public_send(:"#{attr}_bs=", raw_bs) if raw_bs.present? && ad_val.nil?
+            bs_val = instance_variable_get(:"@_miti_raw_bs_#{attr}")
+            bs_val ||= read_attribute(:"#{attr}_bs") if respond_to?(:read_attribute)
+
+            public_send(:"#{attr}_bs=", bs_val) if bs_val.present? && ad_val.nil?
 
             instance_variable_set(:"@_miti_raw_bs_#{attr}", nil)
           rescue Miti::ConversionUnavailableError,
