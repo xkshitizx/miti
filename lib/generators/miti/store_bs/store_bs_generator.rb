@@ -20,29 +20,49 @@ module Miti
       end
 
       def create_migration
-        migration_content = <<~RUBY
-          # frozen_string_literal: true
+        if behavior == :invoke
+          migration_content = <<~RUBY
+            # frozen_string_literal: true
 
-          class AddBsColumnFor#{attr_name.camelize}To#{model_name.camelize.pluralize} < ActiveRecord::Migration[7.1]
-            def change
-              add_column :#{model_name.underscore.pluralize}, :#{attr_name}_bs, :string
+            class AddBsColumnFor#{attr_name.camelize}To#{model_name.camelize.pluralize} < ActiveRecord::Migration[7.1]
+              def change
+                add_column :#{model_name.underscore.pluralize}, :#{attr_name}_bs, :string
+              end
             end
+          RUBY
+
+          table_name = model_name.underscore.pluralize
+          timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
+          filename = "#{timestamp}_add_bs_column_for_#{attr_name}_to_#{table_name}.rb"
+          migration_path = "db/migrate/#{filename}"
+
+          create_file migration_path, migration_content
+          say "Created migration: #{migration_path}", :green
+        else
+          # Revoke: find and remove migration files matching the pattern
+          table_name = model_name.underscore.pluralize
+          pattern = "*_add_bs_column_for_#{attr_name}_to_#{table_name}.rb"
+          Dir["db/migrate/#{pattern}"].each do |f|
+            remove_file f
+            say "Removed migration: #{f}", :green
           end
-        RUBY
-
-        table_name = model_name.underscore.pluralize
-        timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
-        filename = "#{timestamp}_add_bs_column_for_#{attr_name}_to_#{table_name}.rb"
-        migration_path = "db/migrate/#{filename}"
-
-        create_file migration_path, migration_content
-        say "Created migration: #{migration_path}", :green
+        end
       end
 
       def inject_model_concern
         model_path = "app/models/#{model_name.underscore}.rb"
         return unless File.exist?(model_path)
 
+        if behavior == :invoke
+          invoke_inject(model_path)
+        else
+          revoke_inject(model_path)
+        end
+      end
+
+      private
+
+      def invoke_inject(model_path)
         content = File.read(model_path)
         return if content.include?("include Miti::Rails::ModelConcern") &&
                   content.include?("has_nepali_date :#{attr_name}")
@@ -57,7 +77,20 @@ module Miti
         say "Injected Miti concern into #{model_path}", :green
       end
 
+      def revoke_inject(model_path)
+        lines = File.readlines(model_path)
+        filtered = lines.grep_v(/^\s+has_nepali_date\s+#{Regexp.escape(":#{attr_name}")}/)
+        has_other = filtered.any? { |l| l.match?(/^\s+has_nepali_date\s+:/) }
+        filtered = filtered.grep_v(/^\s+include Miti::Rails::ModelConcern\s*$/) unless has_other
+        File.write(model_path, filtered.join)
+        say "Removed Miti concern from #{model_path}", :green
+      end
+
+      public
+
       def print_instructions
+        return unless behavior == :invoke
+
         say "", :green
         say "Almost done! Here's what you need to do:", :green
         say "", :green
