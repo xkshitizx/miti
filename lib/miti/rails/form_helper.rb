@@ -16,8 +16,8 @@ module Miti
       def nepali_date_field(object_name, method, options = {})
         object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         default_val = options.delete(:value)
-        value       = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
-        field_method = form_method_for(object, method)
+        value = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
+        bs_method = :"#{method}_bs"
 
         tag_options = {
           type: "text",
@@ -31,29 +31,19 @@ module Miti
           }
         }.merge(options)
 
-        input = ActionView::Helpers::Tags::TextField.new(object_name, field_method, self, tag_options).render
+        input = ActionView::Helpers::Tags::TextField.new(object_name, bs_method, self, tag_options).render
 
-        icon = tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
-                          data: { action: "click->miti-date-picker#open" }) do
-          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none",
-                  stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
-            tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
-              tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
-              tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
-              tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
-          end
-        end
+        ad_input = build_ad_hidden(object_name, method, object, default_val)
 
-        tag.div(class: "miti-date-field-wrapper",
-                data: { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }) do
-          input + icon
-        end
+        icon = calendar_icon
+        wrapper_data = { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }
+        tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + ad_input + icon }
       end
 
       def nepali_date_select(object_name, method, options = {})
         object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         value  = bs_value_for(object, method)
-        field_method = form_method_for(object, method)
+        field_method = select_method_for(object, method)
 
         selected_year  = value&.barsa
         selected_month = value&.mahina
@@ -103,6 +93,48 @@ module Miti
         return bs_method if object.respond_to?("#{method}_bs") || object.respond_to?("#{method}_bs=")
 
         method
+      end
+
+      def select_method_for(object, method)
+        bs_method = :"#{method}_bs"
+        return bs_method if object.respond_to?("#{method}_bs") || object.respond_to?("#{method}_bs=")
+
+        method
+      end
+
+      def calendar_icon
+        tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
+                   data: { action: "click->miti-date-picker#open" }) do
+          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none",
+                  stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
+            tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
+              tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
+              tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
+              tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
+          end
+        end
+      end
+
+      def build_ad_hidden(object_name, method, object, default_val)
+        ad_value = ad_value_for(object, method, default_val)
+        tag.input(type: "hidden",
+                  name: "#{object_name}[#{method}]",
+                  data: { miti_date_picker_target: "adValue" },
+                  value: ad_value)
+      end
+
+      def ad_value_for(object, method, default_val)
+        if default_val
+          nepali = parse_bs_value(default_val)
+          return nepali.tarik.to_s if nepali
+        end
+
+        return nil unless object.respond_to?(method)
+
+        ad_date = object.public_send(method)
+        ad_date.is_a?(Date) ? ad_date.to_s : nil
+      rescue StandardError
+        nil
       end
 
       def parse_bs_value(value)

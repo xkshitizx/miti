@@ -5,6 +5,7 @@ const OPEN_CLASS = "miti-date-picker--open"
 
 export default class extends Controller {
   static values = { value: String }
+  static targets = ["adValue"]
 
   connect() {
     this.popover = null
@@ -387,6 +388,16 @@ export default class extends Controller {
     const formatted = MitiConverter.formatBs(barsa, mahina, gatey)
     this.input.value = formatted
     this.valueValue = formatted
+
+    if (this.hasAdValueTarget) {
+      const ad = MitiConverter.bsToAd(barsa, mahina, gatey)
+      if (ad) {
+        const m = String(ad.month).padStart(2, "0")
+        const d = String(ad.day).padStart(2, "0")
+        this.adValueTarget.value = `${ad.year}-${m}-${d}`
+      }
+    }
+
     this.input.dispatchEvent(new Event("input", { bubbles: true }))
     this.input.dispatchEvent(new Event("change", { bubbles: true }))
   }

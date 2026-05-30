@@ -28,27 +28,28 @@ To undo everything:
 ### Date picker field
 
 ```erb
-<%= form.nepali_date_field :happened_on_bs %>
+<%= form.nepali_date_field :happened_on %>
 <!-- Renders a readonly text input with a calendar icon that opens a popover -->
+<!-- Submits as event[happened_on] — the custom type auto-converts BS string to AD Date -->
 ```
 
 With a default value:
 
 ```erb
-<%= form.nepali_date_field :happened_on_bs, value: "2082-01-15" %>
-<%= form.nepali_date_field :happened_on_bs, value: @event.happened_on_bs %>
+<%= form.nepali_date_field :happened_on, value: "2082-01-15" %>
+<%= form.nepali_date_field :happened_on, value: @event.happened_on_bs %>
 ```
 
 Without a form builder:
 
 ```erb
-<%= nepali_date_field :event, :happened_on_bs %>
+<%= nepali_date_field :event, :happened_on %>
 ```
 
 ### Date select (3 dropdowns)
 
 ```erb
-<%= form.nepali_date_select :happened_on_bs %>
+<%= form.nepali_date_select :happened_on %>
 ```
 
 ### Model concern
@@ -64,6 +65,27 @@ This defines:
 - `event.happened_on_bs` — returns the date as a `Miti::NepaliDate`
 - `event.happened_on_bs = "2082-01-15"` — sets the AD column from a BS string
 - `event.happened_on_bs_human` — returns a readable description (respects `I18n.locale`)
+- `event.happened_on = "2082-01-15"` — auto-converts BS string to AD via `:miti_nepali_date` type
+
+#### Optional BS column storage
+
+```ruby
+class Event < ApplicationRecord
+  include Miti::Rails::ModelConcern
+  has_nepali_date :happened_on, store_bs: true
+end
+```
+
+Syncs the BS date to a `happened_on_bs` column on save. Generate the migration:
+
+```
+$ rails generate miti:store_bs Event happened_on
+```
+
+With `store_bs: true`:
+- `event.happened_on_bs` reads from the DB column directly (zero conversion cost)
+- Falls back to converting from AD if the column is empty
+- The BS column is auto-synced via `before_save`
 
 ### Calendar
 

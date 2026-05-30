@@ -8,22 +8,41 @@ module Miti
       class InvalidNepaliDateError < StandardError; end
 
       module ClassMethods
-        def has_nepali_date(*attrs)
+        def has_nepali_date(*attrs, store_bs: false)
+          include Miti::Rails::StoreBs if store_bs
           attrs.each do |attr|
-            define_bs_getter(attr)
+            attribute attr, :miti_nepali_date if respond_to?(:attribute)
+            define_bs_getter(attr, store_bs: store_bs)
             define_bs_setter(attr)
             define_bs_human(attr)
+            define_store_bs(attr) if store_bs
           end
         end
 
         private
 
-        def define_bs_getter(attr)
-          define_method :"#{attr}_bs" do
-            ad_date = public_send(attr)
-            Miti.to_bs(ad_date) if ad_date
-          rescue Miti::ConversionUnavailableError
-            nil
+        def define_bs_getter(attr, store_bs: false)
+          if store_bs
+            define_method :"#{attr}_bs" do
+              raw = if respond_to?(:read_attribute)
+                      read_attribute(:"#{attr}_bs")
+                    else
+                      instance_variable_get(:"@#{attr}_bs")
+                    end
+              return Miti::NepaliDate.parse(raw) if raw
+
+              ad_date = public_send(attr)
+              Miti.to_bs(ad_date) if ad_date
+            rescue Miti::NepaliDate::FormatError, Miti::NepaliDate::DateRangeError, Miti::ConversionUnavailableError
+              nil
+            end
+          else
+            define_method :"#{attr}_bs" do
+              ad_date = public_send(attr)
+              Miti.to_bs(ad_date) if ad_date
+            rescue Miti::ConversionUnavailableError
+              nil
+            end
           end
         end
 

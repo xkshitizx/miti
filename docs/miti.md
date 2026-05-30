@@ -29,5 +29,36 @@ Miti.to_bs("2022/10/12").to_s(separator: "/") # separator can be [" ", "/"]
   #=> "2079 06 26" when (separator: " ")
 
 Miti.to_ad("2079/06/26")
-  #=> #<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>
+  #=> #<Date: 2022-10-21 ((2459865j,0s,0n),+0s,2299161j)>
 ```
+
+## Rails
+
+### Custom ActiveRecord type (auto-loaded in Rails apps)
+
+Miti registers a `:miti_nepali_date` type that auto-converts BS strings to AD dates when assigned to a column:
+
+```ruby
+class Event < ApplicationRecord
+  include Miti::Rails::ModelConcern
+  has_nepali_date :happened_on
+  # This registers: attribute :happened_on, :miti_nepali_date
+end
+
+event = Event.new(happened_on: "2082-01-15")
+event.happened_on # => #<Date: 2025-04-28> (auto-converted)
+```
+
+This means form fields using `nepali_date_field :happened_on` submit BS strings directly to the AD column. No `_bs` suffix needed in strong params — just permit `:happened_on`.
+
+### store_bs: true
+
+```ruby
+has_nepali_date :happened_on, store_bs: true
+```
+
+Syncs the BS date to a `happened_on_bs` column on save (requires DB column). The `_bs` getter reads from the column directly for fast access, falling back to conversion from AD if empty.
+
+Generate the migration:
+
+    $ rails generate miti:store_bs Event happened_on

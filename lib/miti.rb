@@ -130,6 +130,8 @@ module Miti
 end
 
 if defined?(Rails)
+  require_relative "miti/rails/type"
+  require_relative "miti/rails/store_bs"
   require_relative "miti/rails/calendar/day_presenter"
   require_relative "miti/rails/calendar_helper"
   require_relative "miti/rails/form_helper"

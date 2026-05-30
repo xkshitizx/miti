@@ -1,0 +1,10 @@
+Description:
+    Generate a migration to add a BS date column for use with has_nepali_date store_bs: true
+
+    This generator creates a migration that adds a string column to store
+    the Nepali (BS) date alongside your existing AD date column.
+
+Example:
+    bin/rails generate miti:store_bs Event happened_on
+
+    This creates a migration adding happened_on_bs string column to the events table.

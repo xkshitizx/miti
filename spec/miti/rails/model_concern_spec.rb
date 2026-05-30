@@ -3,6 +3,7 @@
 require_relative "../../spec_helper"
 require "active_model"
 require "miti/rails/model_concern"
+require "miti/rails/store_bs"
 
 RSpec.describe Miti::Rails::ModelConcern do
   before do
@@ -103,6 +104,60 @@ RSpec.describe Miti::Rails::ModelConcern do
     context "when the attribute is nil" do
       it "returns nil" do
         expect(model.happened_on_bs_human).to be_nil
+      end
+    end
+  end
+
+  describe "store_bs: true" do
+    before do
+      stub_const("StoreBsModel", Class.new do
+        include ActiveModel::Model
+        include Miti::Rails::ModelConcern
+
+        attr_accessor :happened_on
+        attr_accessor :happened_on_bs
+
+        def self.before_save(*); end
+
+        has_nepali_date :happened_on, store_bs: true
+      end)
+    end
+
+    let(:model) { StoreBsModel.new }
+
+    it "includes StoreBs module" do
+      expect(StoreBsModel.ancestors).to include(Miti::Rails::StoreBs)
+    end
+
+    describe "._bs getter" do
+      context "when the BS column is populated" do
+        before do
+          model.happened_on = Date.new(2026, 5, 13)
+        end
+
+        it "returns the BS date from the column" do
+          instance_var = :@happened_on_bs
+          model.instance_variable_set(instance_var, "2083-01-30")
+          bs = model.happened_on_bs
+          expect(bs).to be_a(Miti::NepaliDate)
+          expect(bs.barsa).to eq(2083)
+          expect(bs.mahina).to eq(1)
+          expect(bs.gatey).to eq(30)
+        end
+      end
+
+      context "when the BS column is empty" do
+        before do
+          model.happened_on = Date.new(2026, 5, 13)
+        end
+
+        it "falls back to converting from AD" do
+          bs = model.happened_on_bs
+          expect(bs).to be_a(Miti::NepaliDate)
+          expect(bs.barsa).to eq(2083)
+          expect(bs.mahina).to eq(1)
+          expect(bs.gatey).to eq(30)
+        end
       end
     end
   end
