@@ -43,7 +43,7 @@ module Miti
           table_name = model_name.underscore.pluralize
           pattern = "*_add_bs_column_for_#{attr_name}_to_#{table_name}.rb"
           Dir["db/migrate/#{pattern}"].each do |f|
-            remove_file f
+            FileUtils.rm(f)
             say "Removed migration: #{f}", :green
           end
         end
@@ -68,9 +68,9 @@ module Miti
                   content.include?("has_nepali_date :#{attr_name}")
 
         snippet = if content.include?("include Miti::Rails::ModelConcern")
-                    "\n  has_nepali_date :#{attr_name}, store_bs: true\n"
+                    "  has_nepali_date :#{attr_name}, store_bs: true\n"
                   else
-                    "\n  include Miti::Rails::ModelConcern\n  has_nepali_date :#{attr_name}, store_bs: true\n"
+                    "  include Miti::Rails::ModelConcern\n  has_nepali_date :#{attr_name}, store_bs: true\n"
                   end
 
         inject_into_class model_path, model_name.camelize, snippet
