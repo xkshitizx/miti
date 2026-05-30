@@ -34,7 +34,7 @@ module Miti
           application.register("miti-date-picker", MitiDatePickerController)
         JS
         if behavior == :revoke
-          gsub_file controller_path, /\n?#{Regexp.escape(content)}/, ""
+          gsub_file controller_path, /\n?#{Regexp.escape(content)}/, "", force: true
           return
         end
 
@@ -80,7 +80,7 @@ module Miti
         return unless uses_sprockets?
 
         if behavior == :revoke
-          gsub_file css_file, %r{\n \* \*= require miti/calendar}, ""
+          gsub_file css_file, %r{\n \* \*= require miti/calendar}, "", force: true
           return
         end
 
@@ -101,8 +101,8 @@ module Miti
         tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
 
         if behavior == :revoke
-          gsub_file layout, /\n\s*<%= include_miti_date_picker_data %>/, ""
-          gsub_file layout, %r{\n\s*<%= stylesheet_link_tag "miti/calendar" %>}, ""
+          gsub_file layout, /\n\s*<%= include_miti_date_picker_data %>/, "", force: true
+          gsub_file layout, %r{\n\s*<%= stylesheet_link_tag "miti/calendar" %>}, "", force: true
           return
         end
 
@@ -119,8 +119,8 @@ module Miti
         return unless File.exist?("config/importmap.rb")
 
         if behavior == :revoke
-          gsub_file "config/importmap.rb", %r{\n# Miti: Nepali date picker\npin "miti/converter".*}, ""
-          gsub_file "config/importmap.rb", %r{\npin "miti/date_picker_controller".*}, ""
+          gsub_file "config/importmap.rb", %r{\n# Miti: Nepali date picker\npin "miti/converter".*}, "", force: true
+          gsub_file "config/importmap.rb", %r{\npin "miti/date_picker_controller".*}, "", force: true
           return
         end
 
