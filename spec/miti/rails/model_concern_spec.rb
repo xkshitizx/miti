@@ -3,8 +3,6 @@
 require_relative "../../spec_helper"
 require "active_model"
 require "miti/rails/model_concern"
-require "miti/rails/store_bs"
-
 RSpec.describe Miti::Rails::ModelConcern do
   before do
     stub_const("TestModel", Class.new do
@@ -117,17 +115,11 @@ RSpec.describe Miti::Rails::ModelConcern do
         attr_accessor :happened_on
         attr_accessor :happened_on_bs
 
-        def self.before_save(*); end
-
         has_nepali_date :happened_on, store_bs: true
       end)
     end
 
     let(:model) { StoreBsModel.new }
-
-    it "includes StoreBs module" do
-      expect(StoreBsModel.ancestors).to include(Miti::Rails::StoreBs)
-    end
 
     describe "._bs getter" do
       context "when the BS column is populated" do

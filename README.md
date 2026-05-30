@@ -108,7 +108,7 @@ class Event < ApplicationRecord
 end
 ```
 
-Syncs the BS date to a `happened_on_bs` column on save. Generate the migration:
+The setter writes the BS string to the `happened_on_bs` column on assignment. Generate the migration:
 
 ```
 $ rails generate miti:store_bs Event happened_on
@@ -117,7 +117,7 @@ $ rails generate miti:store_bs Event happened_on
 With `store_bs: true`:
 - `event.happened_on_bs` reads from the DB column directly (zero conversion cost)
 - Falls back to converting from AD if the column is empty
-- The BS column is auto-synced via `before_save`
+- The setter writes the BS string to the column immediately
 
 ### Calendar grid
 
