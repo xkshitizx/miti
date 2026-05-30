@@ -44,8 +44,19 @@ module Miti
       end
 
       def add_stylesheet
-        copy_css_to_app if options.copy_styles? || uses_bundler?
+        copy_css_to_app if options.copy_styles?
         add_sprockets_require
+      end
+
+      def suggest_copy_styles
+        return if behavior == :revoke
+        return if options.copy_styles?
+        return unless uses_bundler?
+
+        say "", :yellow
+        say "Bundler setup detected (esbuild/webpack/rollup/vite).", :yellow
+        say "If the calendar styles aren't showing, run:", :yellow
+        say "  rails generate miti:install --copy-styles", :cyan
       end
 
       private
@@ -58,11 +69,7 @@ module Miti
           remove_file css_path if File.exist?(css_path)
         else
           create_file css_path, File.read(css_source)
-          if options.copy_styles?
-            say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
-          else
-            say "Copied calendar.css to app/assets/stylesheets/miti/ for bundler setup", :green
-          end
+          say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
         end
       end
 
