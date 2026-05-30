@@ -38,6 +38,41 @@ module Miti
         create_file migration_path, migration_content
         say "Created migration: #{migration_path}", :green
       end
+
+      def inject_model_concern
+        model_path = "app/models/#{model_name.underscore}.rb"
+        return unless File.exist?(model_path)
+
+        content = File.read(model_path)
+        return if content.include?("include Miti::Rails::ModelConcern") &&
+                  content.include?("has_nepali_date :#{attr_name}")
+
+        snippet = if content.include?("include Miti::Rails::ModelConcern")
+                    "\n  has_nepali_date :#{attr_name}, store_bs: true\n"
+                  else
+                    "\n  include Miti::Rails::ModelConcern\n  has_nepali_date :#{attr_name}, store_bs: true\n"
+                  end
+
+        inject_into_class model_path, model_name.camelize, snippet
+        say "Injected Miti concern into #{model_path}", :green
+      end
+
+      def print_instructions
+        say "", :green
+        say "Almost done! Here's what you need to do:", :green
+        say "", :green
+        say "  1. Run the migration:", :yellow
+        say "       rails db:migrate", :cyan
+        say "", :green
+        say "  2. In your form, use the date picker:", :yellow
+        say "       <%= form.nepali_date_field :#{attr_name} %>", :cyan
+        say "", :green
+        say "  3. In your controller, permit the params:", :yellow
+        say "       params.require(:#{model_name.underscore})" \
+            ".permit(:#{attr_name}, :#{attr_name}_bs)", :cyan
+        say "", :green
+        say "  The submitted BS string is auto-converted to AD via the custom type.", :green
+      end
     end
   end
 end

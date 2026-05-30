@@ -17,7 +17,6 @@ module Miti
         object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
         default_val = options.delete(:value)
         value = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
-        bs_method = :"#{method}_bs"
 
         tag_options = {
           type: "text",
@@ -31,13 +30,11 @@ module Miti
           }
         }.merge(options)
 
-        input = ActionView::Helpers::Tags::TextField.new(object_name, bs_method, self, tag_options).render
-
-        ad_input = build_ad_hidden(object_name, method, object, default_val)
+        input = ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
 
         icon = calendar_icon
         wrapper_data = { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }
-        tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + ad_input + icon }
+        tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + icon }
       end
 
       def nepali_date_select(object_name, method, options = {})
@@ -88,13 +85,6 @@ module Miti
         convert_to_nepali(ad_date)
       end
 
-      def form_method_for(object, method)
-        bs_method = :"#{method}_bs"
-        return bs_method if object.respond_to?("#{method}_bs") || object.respond_to?("#{method}_bs=")
-
-        method
-      end
-
       def select_method_for(object, method)
         bs_method = :"#{method}_bs"
         return bs_method if object.respond_to?("#{method}_bs") || object.respond_to?("#{method}_bs=")
@@ -113,28 +103,6 @@ module Miti
               tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
           end
         end
-      end
-
-      def build_ad_hidden(object_name, method, object, default_val)
-        ad_value = ad_value_for(object, method, default_val)
-        tag.input(type: "hidden",
-                  name: "#{object_name}[#{method}]",
-                  data: { miti_date_picker_target: "adValue" },
-                  value: ad_value)
-      end
-
-      def ad_value_for(object, method, default_val)
-        if default_val
-          nepali = parse_bs_value(default_val)
-          return nepali.tarik.to_s if nepali
-        end
-
-        return nil unless object.respond_to?(method)
-
-        ad_date = object.public_send(method)
-        ad_date.is_a?(Date) ? ad_date.to_s : nil
-      rescue StandardError
-        nil
       end
 
       def parse_bs_value(value)
