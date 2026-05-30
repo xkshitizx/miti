@@ -16,6 +16,7 @@ module Miti
             define_bs_setter(attr)
             define_bs_human(attr)
             define_store_bs(attr) if store_bs
+            define_bs_sync(attr)
           end
         end
 
@@ -48,6 +49,12 @@ module Miti
 
         def define_bs_setter(attr)
           define_method :"#{attr}_bs=" do |value|
+            raw = case value
+                  when String then value
+                  when Miti::NepaliDate then value.to_s
+                  end
+            instance_variable_set(:"@_miti_raw_bs_#{attr}", raw)
+
             case value
             when Miti::NepaliDate
               public_send(:"#{attr}=", value.tarik)
@@ -74,6 +81,23 @@ module Miti
             return nil unless nepali_date
 
             nepali_date.descriptive(nepali: I18n.locale == :ne)
+          end
+        end
+
+        def define_bs_sync(attr)
+          return unless respond_to?(:before_validation)
+
+          before_validation do
+            raw_bs = instance_variable_get(:"@_miti_raw_bs_#{attr}")
+            ad_val = public_send(attr)
+
+            public_send(:"#{attr}_bs=", raw_bs) if raw_bs.present? && ad_val.nil?
+
+            instance_variable_set(:"@_miti_raw_bs_#{attr}", nil)
+          rescue Miti::ConversionUnavailableError,
+                 Miti::NepaliDate::FormatError,
+                 Miti::NepaliDate::DateRangeError
+            nil
           end
         end
       end

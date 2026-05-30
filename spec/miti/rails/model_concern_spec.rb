@@ -183,4 +183,47 @@ RSpec.describe Miti::Rails::ModelConcern do
       expect(model.end_date_bs).to be_a(Miti::NepaliDate)
     end
   end
+
+  describe "before_validation sync" do
+    before do
+      stub_const("SyncModel", Class.new do
+        include ActiveModel::Model
+        include ActiveModel::Validations::Callbacks
+        include Miti::Rails::ModelConcern
+
+        attr_accessor :date
+
+        has_nepali_date :date
+      end)
+    end
+
+    let(:model) { SyncModel.new }
+
+    context "when date_bs is set but date is nil" do
+      it "syncs BS to AD before validation" do
+        model.date_bs = "2083-01-01"
+        model.date = nil
+        model.valid?
+        expect(model.date).to be_a(Date)
+        expect(model.date.year).to eq(2026)
+      end
+    end
+
+    context "when both are already synced" do
+      it "does nothing" do
+        model.date_bs = "2083-01-01"
+        orig_date = model.date
+        model.valid?
+        expect(model.date).to eq(orig_date)
+      end
+    end
+
+    context "raw ivar cleanup" do
+      it "clears the raw ivar after validation" do
+        model.date_bs = "2083-01-01"
+        model.valid?
+        expect(model.instance_variable_get(:@_miti_raw_bs_date)).to be_nil
+      end
+    end
+  end
 end
