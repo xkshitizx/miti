@@ -90,13 +90,24 @@ module Miti
           before_validation do
             ad_val = public_send(attr)
 
-            bs_val = instance_variable_get(:"@_miti_raw_bs_#{attr}")
-            bs_val ||= read_attribute(:"#{attr}_bs") if respond_to?(:read_attribute)
+            if ad_val.nil?
+              bs_val = instance_variable_get(:"@_miti_raw_bs_#{attr}")
+              bs_val ||= read_attribute(:"#{attr}_bs") if respond_to?(:read_attribute)
 
-            public_send(:"#{attr}_bs=", bs_val) if bs_val.present? && ad_val.nil?
+              if bs_val.present?
+                case bs_val
+                when String
+                  nepali_date = Miti::NepaliDate.parse(bs_val)
+                  public_send(:"#{attr}=", Miti.to_ad(nepali_date))
+                when Miti::NepaliDate
+                  public_send(:"#{attr}=", bs_val.tarik)
+                end
+              end
+            end
 
             instance_variable_set(:"@_miti_raw_bs_#{attr}", nil)
-          rescue Miti::ConversionUnavailableError,
+          rescue ArgumentError,
+                 Miti::ConversionUnavailableError,
                  Miti::NepaliDate::FormatError,
                  Miti::NepaliDate::DateRangeError
             nil
