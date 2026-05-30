@@ -66,7 +66,8 @@ module Miti
         css_path = "app/assets/stylesheets/miti/calendar.css"
 
         if behavior == :revoke
-          remove_file css_path if File.exist?(css_path)
+          FileUtils.rm_f(css_path)
+          say "Removed #{css_path}", :green
         else
           create_file css_path, File.read(css_source)
           say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
@@ -140,8 +141,8 @@ module Miti
       def copy_javascript_files
         js_dir = "app/javascript/miti"
         if behavior == :revoke
-          remove_file "#{js_dir}/converter.js"
-          remove_file "#{js_dir}/date_picker_controller.js"
+          FileUtils.rm_f("#{js_dir}/converter.js")
+          FileUtils.rm_f("#{js_dir}/date_picker_controller.js")
           FileUtils.rmdir(js_dir) if File.directory?(js_dir)
           return
         end
