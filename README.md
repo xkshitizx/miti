@@ -47,6 +47,15 @@ Miti.to_bs("2025-04-28").descriptive(nepali: true)
 Miti.to_bs("2025-04-28").to_s
 #=> "2082-01-15"
 
+Miti.to_bs("2025-04-28").format("%g %b %m")
+#=> "15 2082 01"
+
+Miti.to_bs("2025-04-28").format("%B %g, %Y %A")
+#=> "Baisakh 15, 2082 Wednesday"
+
+Miti.to_bs("2025-04-28").format("%B %g, %Y %A", nepali: true)
+#=> "बैशाख 15, 2082 बुधबार"
+
 Miti.to_ad("2082-01-15")
 #=> #<Date: 2025-04-28 ...>
 ```
