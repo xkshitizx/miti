@@ -40,6 +40,26 @@ module Miti
       end
 
       ##
+      # Formats Nepali date with custom tokens.
+      #
+      # Supported tokens:
+      #   %<gatey>g => gatey
+      #   %<mahina>m => mahina
+      #   %<barsa>b => barsa
+      #   %<barsa>Y => barsa
+      #   %<month>B => month name
+      #   %<weekday>A => weekday name
+      #
+      # @return [String]
+      def format(format_string, nepali: false)
+        format_string.gsub(/%(?:<(?<token>gatey|mahina|barsa|month|weekday)>(?<type>[gmbBYA])|(?<legacy>[gmbYA]))/) do
+          token = Regexp.last_match[:token] || Regexp.last_match[:legacy]
+
+          format_token(token, nepali: nepali)
+        end
+      end
+
+      ##
       # Descriptive output for current date
       # When nepali flag is true, month is returned in nepali font and week day in Nepali
       #
@@ -66,6 +86,31 @@ module Miti
         week_day = week_days_in_nepali[nepali_date.bar]
 
         "#{month} #{gatey}, #{barsa} #{week_day}"
+      end
+
+      def month_name(nepali: false)
+        nepali ? months_in_nepali[mahina - 1] : months_in_english[mahina - 1]
+      end
+
+      def week_day_name(nepali: false)
+        nepali ? week_days_in_nepali[nepali_date.bar] : nepali_date.tarik.strftime("%A")
+      end
+
+      def format_token(token, nepali: false)
+        case token
+        when "g", "gatey"
+          gatey.to_s.rjust(2, "0")
+        when "m", "mahina"
+          mahina.to_s.rjust(2, "0")
+        when "b", "barsa", "Y"
+          barsa.to_s
+        when "B", "month"
+          month_name(nepali: nepali)
+        when "A", "weekday"
+          week_day_name(nepali: nepali)
+        else
+          token
+        end
       end
 
       def months_in_english
