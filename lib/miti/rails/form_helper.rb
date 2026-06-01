@@ -123,7 +123,8 @@ module Miti
             Miti.to_bs(Date.parse(value))
           end
         end
-      rescue StandardError
+      rescue ArgumentError, Miti::ConversionUnavailableError,
+             Miti::NepaliDate::FormatError, Miti::NepaliDate::DateRangeError
         nil
       end
     end
