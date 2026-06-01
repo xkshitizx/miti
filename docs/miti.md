@@ -29,7 +29,7 @@ Miti.to_bs("2022/10/12").to_s(separator: "/") # separator can be [" ", "/"]
   #=> "2079 06 26" when (separator: " ")
 
 Miti.to_ad("2079/06/26")
-  #=> #<Date: 2022-10-21 ((2459865j,0s,0n),+0s,2299161j)>
+  #=> #<Date: 2022-10-12 ((2459865j,0s,0n),+0s,2299161j)>
 ```
 
 ## Rails
