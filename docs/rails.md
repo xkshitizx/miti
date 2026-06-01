@@ -76,7 +76,7 @@ class Event < ApplicationRecord
 end
 ```
 
-Syncs the BS date to a `happened_on_bs` column on save. Generate the migration:
+Writes the BS string to the `happened_on_bs` column on assignment. Generate the migration:
 
 ```
 $ rails generate miti:store_bs Event happened_on

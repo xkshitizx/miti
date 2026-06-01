@@ -57,7 +57,7 @@ This means form fields using `nepali_date_field :happened_on` submit BS strings 
 has_nepali_date :happened_on, store_bs: true
 ```
 
-Syncs the BS date to a `happened_on_bs` column on save (requires DB column). The `_bs` getter reads from the column directly for fast access, falling back to conversion from AD if empty.
+Writes the BS string to the `happened_on_bs` column on assignment (requires DB column). The `_bs` getter reads from the column directly for fast access, falling back to conversion from AD if empty.
 
 Generate the migration:
 
