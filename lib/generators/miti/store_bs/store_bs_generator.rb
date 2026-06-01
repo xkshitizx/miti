@@ -24,7 +24,7 @@ module Miti
           migration_content = <<~RUBY
             # frozen_string_literal: true
 
-            class AddBsColumnFor#{attr_name.camelize}To#{model_name.camelize.pluralize} < ActiveRecord::Migration[7.1]
+            class AddBsColumnFor#{attr_name.camelize}To#{model_name.camelize.pluralize} < ActiveRecord::Migration
               def change
                 add_column :#{model_name.underscore.pluralize}, :#{attr_name}_bs, :string
               end
