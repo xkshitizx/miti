@@ -152,6 +152,31 @@ RSpec.describe Miti::Rails::ModelConcern do
         end
       end
     end
+
+    describe "before_validation sync" do
+      before do
+        stub_const("StoreBsSyncModel", Class.new do
+          include ActiveModel::Model
+          include ActiveModel::Validations::Callbacks
+          include Miti::Rails::ModelConcern
+
+          attr_accessor :happened_on
+          attr_accessor :happened_on_bs
+
+          has_nepali_date :happened_on, store_bs: true
+        end)
+      end
+
+      let(:model) { StoreBsSyncModel.new }
+
+      context "when date is set" do
+        it "syncs the BS column from AD after validation" do
+          model.happened_on = Date.new(2026, 5, 13)
+          model.valid?
+          expect(model.instance_variable_get(:@happened_on_bs)).to eq("2083-01-30")
+        end
+      end
+    end
   end
 
   describe "multiple attributes" do
