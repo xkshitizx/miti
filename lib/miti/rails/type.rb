@@ -13,7 +13,7 @@ module Miti
           super
         end
       rescue Miti::ConversionUnavailableError, Miti::NepaliDate::FormatError, Miti::NepaliDate::DateRangeError
-        super
+        nil
       end
     end
   end
