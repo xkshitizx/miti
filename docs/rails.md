@@ -85,7 +85,7 @@ $ rails generate miti:store_bs Event happened_on
 With `store_bs: true`:
 - `event.happened_on_bs` reads from the DB column directly (zero conversion cost)
 - Falls back to converting from AD if the column is empty
-- The BS column is auto-synced via `before_save`
+- The BS string is written to the column immediately by the setter
 
 ### Calendar
 
