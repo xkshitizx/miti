@@ -52,7 +52,7 @@ module Miti
       #
       # @return [String]
       def format(format_string, nepali: false)
-        format_string.gsub(/%(?:<(?<token>gatey|mahina|barsa|month|weekday)>(?<type>[gmbBYA])|(?<legacy>[gmbYA]))/) do
+        format_string.gsub(/%(?:<(?<token>gatey|mahina|barsa|month|weekday)>(?<type>[gmbBYA])|(?<legacy>[gmbYAB]))/) do
           token = Regexp.last_match[:token] || Regexp.last_match[:legacy]
 
           format_token(token, nepali: nepali)
