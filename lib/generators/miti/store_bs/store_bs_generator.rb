@@ -97,14 +97,14 @@ module Miti
         say "  1. Run the migration:", :yellow
         say "       rails db:migrate", :cyan
         say "", :green
-        say "  2. In your form, use the date picker:", :yellow
-        say "       <%= form.nepali_date_field :#{attr_name} %>", :cyan
+        say "  2. In your form, use the date picker with the _bs suffix:", :yellow
+        say "       <%= form.nepali_date_field :#{attr_name}_bs %>", :cyan
         say "", :green
-        say "  3. In your controller, permit the params:", :yellow
+        say "  3. In your controller, permit the _bs param:", :yellow
         say "       params.require(:#{model_name.underscore})" \
-            ".permit(:#{attr_name}, :#{attr_name}_bs)", :cyan
+            ".permit(:#{attr_name}_bs)", :cyan
         say "", :green
-        say "  The submitted BS string is auto-converted to AD via the custom type.", :green
+        say "  The BS string is converted to AD via the setter.", :green
       end
     end
   end
