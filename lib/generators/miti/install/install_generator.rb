@@ -143,7 +143,7 @@ module Miti
         if behavior == :revoke
           FileUtils.rm_f("#{js_dir}/converter.js")
           FileUtils.rm_f("#{js_dir}/date_picker_controller.js")
-          FileUtils.rmdir(js_dir) if File.directory?(js_dir)
+          FileUtils.rm_rf(js_dir) if File.directory?(js_dir)
           return
         end
 
