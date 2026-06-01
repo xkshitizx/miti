@@ -17,14 +17,6 @@ module Miti
         @gatey = nepali_date.gatey
       end
 
-      def self.to_s
-        new(nepali_date).to_s
-      end
-
-      def self.descriptive
-        new(nepali_date).descriptive
-      end
-
       ##
       # Returns Nepali Date in string format(yyyy/mm/dd).
       #
