@@ -13,10 +13,21 @@ module Miti
           raise ArgumentError,
                 "Missing model name. Usage: rails generate miti:store_bs Event happened_on"
         end
-        return unless attr_name.blank?
+
+        unless model_name.match?(/\A[A-Z]\w*\z/)
+          raise ArgumentError,
+                "Invalid model name '#{model_name}'. Must be a valid class name (e.g. Event)."
+        end
+
+        if attr_name.blank?
+          raise ArgumentError,
+                "Missing attribute name. Usage: rails generate miti:store_bs Event happened_on"
+        end
+
+        return if attr_name.match?(/\A[a-z_]\w*\z/)
 
         raise ArgumentError,
-              "Missing attribute name. Usage: rails generate miti:store_bs Event happened_on"
+              "Invalid attribute name '#{attr_name}'. Must be a valid method name (e.g. happened_on)."
       end
 
       def create_migration
