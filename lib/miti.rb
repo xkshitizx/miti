@@ -136,5 +136,6 @@ if defined?(Rails)
   require_relative "miti/rails/form_helper"
   require_relative "miti/rails/date_picker_helper"
   require_relative "miti/rails/model_concern"
+  require_relative "miti/rails/controller_concern"
   require_relative "miti/railtie"
 end
