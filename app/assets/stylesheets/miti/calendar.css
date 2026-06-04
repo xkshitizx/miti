@@ -476,6 +476,33 @@
   background: var(--miti-bg-selected-hover);
 }
 
+.miti-date-picker__day--in-range {
+  background: var(--miti-bg-today);
+  border-radius: 0;
+}
+
+.miti-date-picker__day--range-start,
+.miti-date-picker__day--range-end {
+  background: var(--miti-bg-selected);
+  color: var(--miti-text-selected);
+  font-weight: 600;
+  border-radius: var(--miti-border-radius-sm);
+}
+
+.miti-date-picker__day--range-start.miti-date-picker__day--sun,
+.miti-date-picker__day--range-start.miti-date-picker__day--sat,
+.miti-date-picker__day--range-end.miti-date-picker__day--sun,
+.miti-date-picker__day--range-end.miti-date-picker__day--sat {
+  color: var(--miti-text-selected);
+}
+
+.miti-date-picker__footer--hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--miti-text-faint);
+  padding-top: 8px;
+}
+
 .miti-date-picker__day--sun,
 .miti-date-picker__day--sat {
   color: var(--miti-text-sun);
