@@ -18,12 +18,32 @@ module Miti
       end
     end
 
-    if defined?(Sprockets) && respond_to?(:config) && config.respond_to?(:assets)
-      initializer "miti.assets" do
+    initializer "miti.controller_concern" do
+      ActiveSupport.on_load(:action_controller_base) do
+        include Miti::Rails::ControllerConcern
+      end
+    end
+
+    initializer "miti.routes" do |app|
+      app.routes.prepend do
+        get "miti/calendar_data", to: "miti/calendar_data#show"
+      end
+    end
+
+    initializer "miti.importmap", after: :importmap do |app|
+      if app.respond_to?(:importmap) && app.importmap.respond_to?(:draw)
+        app.importmap.draw(root.join("config/importmap.rb"))
+      end
+    end
+
+    initializer "miti.assets" do
+      if defined?(Sprockets) && config.respond_to?(:assets)
         config.assets.precompile += %w[
           miti/calendar.css
           miti/converter.js
+          miti/date_picker.js
           miti/date_picker_controller.js
+          miti/index.js
         ]
       end
     end
