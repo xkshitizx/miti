@@ -46,6 +46,25 @@ Without a form builder:
 <%= nepali_date_field :event, :happened_on %>
 ```
 
+#### Themes
+
+```erb
+<%= form.nepali_date_field :happened_on, theme: :dark %>
+<%= form.nepali_date_field :happened_on, theme: :tokyo_night %>
+<!-- Use underscores in Ruby symbols (converted to hyphens in CSS) -->
+```
+
+Available themes: `light` (default), `dark`, `indigo`, `midnight`, `tokyo_night`, `nord`.
+
+Use `data-miti-theme` on any ancestor to style a group of pickers.
+
+```erb
+<div data-miti-theme="dark">
+  <%= form.nepali_date_field :start_date %>
+  <%= form.nepali_date_field :end_date %>
+</div>
+```
+
 ### Date select (3 dropdowns)
 
 ```erb
