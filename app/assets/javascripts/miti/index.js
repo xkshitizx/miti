@@ -1,5 +1,6 @@
 import MitiConverter from "miti/converter"
 import MitiDatePicker from "miti/date_picker"
+import MitiDateRangePicker from "miti/date_range_picker"
 
 MitiConverter.init()
 
@@ -24,6 +25,11 @@ function initPickers(root) {
   root.querySelectorAll(".miti-date-field-wrapper:not([data-miti-initialized])").forEach(el => {
     el.dataset.mitiInitialized = "true"
     const picker = new MitiDatePicker(el)
+    picker.attach()
+  })
+  root.querySelectorAll(".miti-date-range-wrapper:not([data-miti-initialized])").forEach(el => {
+    el.dataset.mitiInitialized = "true"
+    const picker = new MitiDateRangePicker(el)
     picker.attach()
   })
 }

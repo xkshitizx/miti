@@ -552,3 +552,47 @@
 .miti-date-picker__cell--selected:hover {
   background: var(--miti-bg-selected-hover);
 }
+
+.miti-date-range-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.miti-date-range__field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 140px;
+  width: 100%;
+}
+
+.miti-date-range__field .miti-date-field {
+  padding: 4px 28px 4px 8px;
+  border: 1px solid var(--miti-border-color);
+  border-radius: var(--miti-border-radius-sm);
+  font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: var(--miti-font-family);
+  color: var(--miti-text-base);
+  background: var(--miti-bg-base);
+}
+
+.miti-date-range__field .miti-date-field:hover {
+  border-color: var(--miti-text-faint);
+}
+
+.miti-date-range__field .miti-date-field:focus {
+  outline: none;
+  border-color: var(--miti-text-accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.miti-date-range__separator {
+  font-size: 13px;
+  color: var(--miti-text-muted);
+  font-family: var(--miti-font-family);
+  flex-shrink: 0;
+}

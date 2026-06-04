@@ -16,7 +16,7 @@ module Miti
       def nepali_date_field(object_name, method, options = {})
         object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
         default_val = options.delete(:value)
-        theme = options.delete(:theme).to_s.tr("_", "-") if options.key?(:theme)
+        theme = normalize_theme(options.delete(:theme))
         value = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
 
         tag_options = {
@@ -26,17 +26,46 @@ module Miti
           readonly: true,
           class: "miti-date-field",
           value: value&.to_s,
+          name: "#{object_name}[#{method}]",
           data: {
             action: DATE_PICKER_ACTIONS.html_safe
           }
-        }.merge(options)
+        }.merge(options.except(:separator))
 
         input = ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
-
-        icon = calendar_icon
         wrapper_data = { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }
         wrapper_data[:"miti-theme"] = theme if theme
-        tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + icon }
+        tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + calendar_icon("miti-date-picker") }
+      end
+
+      def nepali_date_range_field(object_name, start_method, end_method, options = {})
+        object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
+        separator = options.delete(:separator) || "to"
+        theme = normalize_theme(options.delete(:theme))
+
+        start_val = bs_value_for(object, start_method)
+        end_val = bs_value_for(object, end_method)
+
+        start_input = build_range_input(object_name, start_method, start_val)
+        end_input = build_range_input(object_name, end_method, end_val)
+
+        start_field = tag.div(class: "miti-date-range__field miti-date-range__field--start") {
+          start_input + calendar_icon("miti-date-range", "start")
+        }
+        end_field = tag.div(class: "miti-date-range__field miti-date-range__field--end") {
+          end_input + calendar_icon("miti-date-range", "end")
+        }
+
+        wrapper_data = {
+          controller: "miti-date-range",
+          "miti-date-range-start-value": start_val&.to_s,
+          "miti-date-range-end-value": end_val&.to_s
+        }
+        wrapper_data[:"miti-theme"] = theme if theme
+
+        tag.div(class: "miti-date-range-wrapper", data: wrapper_data) do
+          start_field + tag.span(separator, class: "miti-date-range__separator") + end_field
+        end
       end
 
       def nepali_date_select(object_name, method, options = {})
@@ -94,17 +123,37 @@ module Miti
         method
       end
 
-      def calendar_icon
+      def calendar_icon(controller = "miti-date-picker", field = nil)
+        action = field ? "click->#{controller}#open#{field.capitalize}" : "click->#{controller}#open"
         tag.button(type: "button", class: "miti-date-field__icon", tabindex: "-1",
-                   data: { action: "click->miti-date-picker#open" }) do
-          tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none",
-                  stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
-            tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
-              tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
-              tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
-              tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
-          end
+                   data: { action: action }) { calendar_icon_svg }
+      end
+
+      def calendar_icon_svg
+        tag.svg xmlns: "http://www.w3.org/2000/svg", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none",
+                stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" do
+          tag.rect(x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2") +
+            tag.line(x1: "16", y1: "2", x2: "16", y2: "6") +
+            tag.line(x1: "8", y1: "2", x2: "8", y2: "6") +
+            tag.line(x1: "3", y1: "10", x2: "21", y2: "10")
         end
+      end
+
+      def normalize_theme(value)
+        value.to_s.tr("_", "-") if value
+      end
+
+      def build_range_input(object_name, method, value)
+        tag_options = {
+          type: "text",
+          autocomplete: "off",
+          placeholder: "YYYY-MM-DD",
+          readonly: true,
+          class: "miti-date-field",
+          value: value&.to_s,
+          name: "#{object_name}[#{method}]"
+        }
+        ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
       end
 
       def parse_bs_value(value)
@@ -138,6 +187,10 @@ module Miti
     module FormBuilderMethods
       def nepali_date_field(method, options = {})
         @template.nepali_date_field(@object_name, method, options.reverse_merge(object: @object))
+      end
+
+      def nepali_date_range_field(start_method, end_method, options = {})
+        @template.nepali_date_range_field(@object_name, start_method, end_method, options.reverse_merge(object: @object))
       end
 
       def nepali_date_select(method, options = {})

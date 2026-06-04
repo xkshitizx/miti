@@ -95,7 +95,7 @@ With a default value:
 
 Available themes: `light` (default), `dark`, `indigo`, `midnight`, `tokyo_night`, `nord`.
 
-Set `data-miti-theme` on any ancestor to style a group of pickers:
+Use `data-miti-theme` on any ancestor to style a group of pickers:
 
 ```erb
 <div data-miti-theme="dark">
@@ -103,6 +103,23 @@ Set `data-miti-theme` on any ancestor to style a group of pickers:
   <%= form.nepali_date_field :end_date %>
 </div>
 ```
+
+Dark mode auto-detects `prefers-color-scheme: dark`. Set `data-miti-theme-auto="false"` on any ancestor to disable:
+
+```erb
+<div data-miti-theme-auto="false">
+  <%= form.nepali_date_field :happened_on %>
+</div>
+```
+
+#### Date range picker
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date %>
+<%= form.nepali_date_range_field :start_date, :end_date, theme: :nord, separator: "to" %>
+```
+
+Renders two coordinated date pickers. Selecting a start date auto-advances focus to the end field.
 
 ### Date select (3 dropdowns)
 

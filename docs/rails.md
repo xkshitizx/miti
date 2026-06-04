@@ -65,6 +65,29 @@ Use `data-miti-theme` on any ancestor to style a group of pickers.
 </div>
 ```
 
+Dark mode auto-detects `prefers-color-scheme: dark`. Set `data-miti-theme-auto="false"` on any ancestor to disable:
+
+```erb
+<div data-miti-theme-auto="false">
+  <%= form.nepali_date_field :happened_on %>
+</div>
+```
+
+### Date range picker
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date %>
+<%= form.nepali_date_range_field :start_date, :end_date, theme: :nord, separator: "to" %>
+```
+
+Without a form builder:
+
+```erb
+<%= nepali_date_range_field :event, :start_date, :end_date %>
+```
+
+Renders two coordinated date pickers. Selecting a start date auto-advances focus to the end field.
+
 ### Date select (3 dropdowns)
 
 ```erb

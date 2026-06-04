@@ -8,6 +8,14 @@ export default class MitiDatePicker {
     this.input = element.querySelector(".miti-date-field")
     this.icon = element.querySelector(".miti-date-field__icon")
     this.theme = element.dataset.mitiTheme
+    if (!this.theme) {
+      const auto = element.closest("[data-miti-theme-auto]")
+      if (!auto || auto.dataset.mitiThemeAuto !== "false") {
+        if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+          this.theme = "dark"
+        }
+      }
+    }
     this.popover = null
     this.currentYear = null
     this.currentMonth = null
@@ -365,6 +373,10 @@ export default class MitiDatePicker {
     this.input.value = formatted
     this.input.dispatchEvent(new Event("input", { bubbles: true }))
     this.input.dispatchEvent(new Event("change", { bubbles: true }))
+    this.input.dispatchEvent(new CustomEvent("miti:selected", {
+      bubbles: true,
+      detail: { barsa, mahina, gatey, formatted }
+    }))
   }
 
   _clearBlurTimeout() {
