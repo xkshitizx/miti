@@ -3,60 +3,70 @@
 module Miti
   module Generators
     class InstallGenerator < ::Rails::Generators::Base
-      desc "Installs Miti Rails integration: importmap/bundler JS, Stimulus controller, and stylesheets"
+      desc "Installs Miti Rails integration"
 
       class_option :copy_styles,
                    type: :boolean,
                    default: false,
-                   desc: "Copy calendar.css into your app for easy customization (overrides gem default)"
+                   desc: "Copy calendar.css into your app for easy customization"
 
       class_option :copy_javascript,
                    type: :boolean,
                    default: false,
-                   desc: "Force copy JS files into app/javascript/miti/ for bundler setup"
+                   desc: "Copy JS files into app/javascript/miti/ for bundler setup"
 
-      def pin_or_copy_javascript
-        if importmap?
-          pin_importmap
-        else
-          copy_javascript_files
-          pin_importmap if File.exist?("config/importmap.rb")
-        end
-      end
+      def add_import_to_application_js
+        js_path = "app/javascript/application.js"
+        return unless File.exist?(js_path)
 
-      def register_stimulus_controller
-        controller_path = "app/javascript/controllers/index.js"
-        return unless File.exist?(controller_path)
+        marker = "import \"controllers\""
+        return unless File.read(js_path).include?(marker)
 
-        import_path = importmap? ? "miti/date_picker_controller" : "../miti/date_picker_controller"
-        content = <<~JS
-          import MitiDatePickerController from "#{import_path}"
-          application.register("miti-date-picker", MitiDatePickerController)
-        JS
         if behavior == :revoke
-          gsub_file controller_path, /\n?#{Regexp.escape(content)}/, "", force: true
+          gsub_file js_path, /\nimport "miti"/, "", force: true
           return
         end
 
-        return if file_contains?(controller_path, content.strip)
+        return if File.read(js_path).include?("import \"miti\"")
 
-        append_to_file controller_path, "\n#{content}"
+        inject_into_file js_path, after: "#{marker}\n" do
+          "import \"miti\"\n"
+        end
+        say "Added import \"miti\" to #{js_path}", :green
       end
 
-      def add_stylesheet
-        copy_css_to_app if options.copy_styles?
-        add_sprockets_require
+      def add_stylesheet_to_layout
+        layout_path = Dir.glob("app/views/layouts/application.html.{erb,haml}").first
+        return unless layout_path
+
+        content = '    <%= stylesheet_link_tag "miti/calendar" %>'
+
+        if behavior == :revoke
+          gsub_file layout_path, /\n?#{Regexp.escape(content)}/, "", force: true
+          return
+        end
+
+        return if File.read(layout_path).include?("miti/calendar")
+
+        if layout_path.end_with?(".erb")
+          inject_into_file layout_path, before: "  </head>" do
+            "\n#{content}\n"
+          end
+        elsif layout_path.end_with?(".haml")
+          inject_into_file layout_path, before: "%head" do
+            "= stylesheet_link_tag \"miti/calendar\"\n"
+          end
+        end
+        say "Added stylesheet_link_tag \"miti/calendar\" to #{layout_path}", :green
       end
 
-      def suggest_copy_styles
-        return if behavior == :revoke
-        return if options.copy_styles?
-        return unless uses_bundler?
-
-        say "", :yellow
-        say "Bundler setup detected (esbuild/webpack/rollup/vite).", :yellow
-        say "If the calendar styles aren't showing, run:", :yellow
-        say "  rails generate miti:install --copy-styles", :cyan
+      def copy_assets
+        if options.copy_styles?
+          copy_css_to_app
+        end
+        if options.copy_javascript? || uses_bundler?
+          copy_javascript_files
+        end
       end
 
       private
@@ -70,94 +80,31 @@ module Miti
           say "Removed #{css_path}", :green
         else
           create_file css_path, File.read(css_source)
-          say "Copied calendar.css to app/assets/stylesheets/miti/ — edit it directly to customize", :green
+          say "Copied calendar.css to app/assets/stylesheets/miti/", :green
         end
-      end
-
-      def add_sprockets_require
-        css_file = detect_css_file
-        return unless css_file
-        return unless uses_sprockets?
-
-        if behavior == :revoke
-          gsub_file css_file, %r{\n \* \*= require miti/calendar}, "", force: true
-          return
-        end
-
-        return if file_contains?(css_file, "require miti/calendar")
-
-        inject_into_file css_file, before: "\n */" do
-          "\n * *= require miti/calendar"
-        end
-      end
-
-      public
-
-      def add_helpers_to_layout
-        layout = detect_layout
-        return unless layout
-
-        tags = "\n    <%= include_miti_date_picker_data %>"
-        tags += "\n    <%= stylesheet_link_tag \"miti/calendar\" %>" unless uses_sprockets?
-
-        if behavior == :revoke
-          gsub_file layout, /\n\s*<%= include_miti_date_picker_data %>/, "", force: true
-          gsub_file layout, %r{\n\s*<%= stylesheet_link_tag "miti/calendar" %>}, "", force: true
-          return
-        end
-
-        return if file_contains?(layout, "include_miti_date_picker_data")
-
-        inject_into_file layout, before: %r{</head>}i do
-          "#{tags}\n  "
-        end
-      end
-
-      private
-
-      def pin_importmap
-        return unless File.exist?("config/importmap.rb")
-
-        if behavior == :revoke
-          gsub_file "config/importmap.rb", %r{\n# Miti: Nepali date picker\npin "miti/converter".*}, "", force: true
-          gsub_file "config/importmap.rb", %r{\npin "miti/date_picker_controller".*}, "", force: true
-          return
-        end
-
-        unless file_contains?("config/importmap.rb", 'pin "miti/converter"')
-          append_to_file "config/importmap.rb", <<~RUBY
-            # Miti: Nepali date picker
-            pin "miti/converter", to: "miti/converter.js"
-            pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
-          RUBY
-        end
-
-        return if file_contains?("config/importmap.rb", '"@hotwired/stimulus"')
-
-        append_to_file "config/importmap.rb",
-                       "pin \"@hotwired/stimulus\", to: \"stimulus.min.js\"\n"
       end
 
       def copy_javascript_files
         js_dir = "app/javascript/miti"
         if behavior == :revoke
-          FileUtils.rm_f("#{js_dir}/converter.js")
-          FileUtils.rm_f("#{js_dir}/date_picker_controller.js")
+          %w[converter date_picker date_picker_controller index].each do |f|
+            FileUtils.rm_f("#{js_dir}/#{f}.js")
+          end
           FileUtils.rm_rf(js_dir) if File.directory?(js_dir)
           return
         end
 
-        ensure_stimulus_package
-
         empty_directory js_dir
-        create_file "#{js_dir}/converter.js", File.read(gem_asset_path("converter.js"))
-        content = File.read(gem_asset_path("date_picker_controller.js"))
-                      .gsub('"miti/converter"', '"./converter"')
-        create_file "#{js_dir}/date_picker_controller.js", content
+        %w[converter date_picker date_picker_controller].each do |f|
+          write_js_file(js_dir, f)
+        end
       end
 
-      def importmap?
-        !uses_bundler? && File.exist?("config/importmap.rb")
+      def write_js_file(js_dir, basename)
+        content = File.read(gem_asset_path("#{basename}.js"))
+                     .gsub('"miti/converter"', '"./converter"')
+                     .gsub('"miti/date_picker"', '"./date_picker"')
+        create_file "#{js_dir}/#{basename}.js", content
       end
 
       def uses_bundler?
@@ -175,58 +122,8 @@ module Miti
         script.include?("esbuild") || script.include?("build --js")
       end
 
-      def ensure_stimulus_package
-        return unless File.exist?("package.json")
-
-        pkg = JSON.parse(File.read("package.json"))
-        deps = pkg.fetch("dependencies", {})
-        dev_deps = pkg.fetch("devDependencies", {})
-        return if deps.key?("@hotwired/stimulus") || dev_deps.key?("@hotwired/stimulus")
-
-        say "Adding @hotwired/stimulus JavaScript package...", :green
-        run package_manager_add_command
-      end
-
-      def package_manager_add_command
-        if File.exist?("yarn.lock")
-          "yarn add @hotwired/stimulus"
-        elsif File.exist?("pnpm-lock.yaml")
-          "pnpm add @hotwired/stimulus"
-        elsif File.exist?("bun.lockb")
-          "bun add @hotwired/stimulus"
-        else
-          "npm install @hotwired/stimulus --no-audit --no-fund"
-        end
-      end
-
-      def file_contains?(path, string)
-        File.read(path).include?(string)
-      end
-
       def gem_asset_path(filename)
         File.expand_path("../../../../app/assets/javascripts/miti/#{filename}", __dir__)
-      end
-
-      def uses_sprockets?
-        File.exist?("Gemfile") && File.read("Gemfile").include?("sprockets-rails")
-      end
-
-      def detect_css_file
-        return unless uses_sprockets?
-
-        %w[
-          app/assets/stylesheets/application.css
-          app/assets/stylesheets/application.css.scss
-          app/assets/stylesheets/application.bootstrap.css
-        ].detect { |f| File.exist?(f) }
-      end
-
-      def detect_layout
-        %w[
-          app/views/layouts/application.html.erb
-          app/views/layouts/application.html.haml
-          app/views/layouts/application.html.slim
-        ].detect { |f| File.exist?(f) }
       end
     end
   end
