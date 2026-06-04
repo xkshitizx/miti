@@ -86,6 +86,24 @@ With a default value:
 <%= form.nepali_date_field :happened_on, value: "2082-01-15" %>
 ```
 
+#### Themes
+
+```erb
+<%= form.nepali_date_field :happened_on, theme: :dark %>
+<%= form.nepali_date_field :happened_on, theme: :tokyo_night %>
+```
+
+Available themes: `light` (default), `dark`, `indigo`, `midnight`, `tokyo_night`, `nord`.
+
+Set `data-miti-theme` on any ancestor to style a group of pickers:
+
+```erb
+<div data-miti-theme="dark">
+  <%= form.nepali_date_field :start_date %>
+  <%= form.nepali_date_field :end_date %>
+</div>
+```
+
 ### Date select (3 dropdowns)
 
 ```erb
