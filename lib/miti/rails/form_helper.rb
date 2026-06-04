@@ -42,12 +42,18 @@ module Miti
         object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
         separator = options.delete(:separator) || "to"
         theme = normalize_theme(options.delete(:theme))
+        start_default = options.delete(:start_value)
+        end_default = options.delete(:end_value)
 
-        start_val = bs_value_for(object, start_method)
-        end_val = bs_value_for(object, end_method)
+        start_val = start_default ? parse_bs_value(start_default) : bs_value_for(object, start_method)
+        end_val = end_default ? parse_bs_value(end_default) : bs_value_for(object, end_method)
 
-        start_input = build_range_input(object_name, start_method, start_val)
-        end_input = build_range_input(object_name, end_method, end_val)
+        input_opts = options.except(:start_html, :end_html)
+        start_html = options.delete(:start_html) || input_opts
+        end_html = options.delete(:end_html) || input_opts
+
+        start_input = build_range_input(object_name, start_method, start_val, start_html)
+        end_input = build_range_input(object_name, end_method, end_val, end_html)
 
         start_field = tag.div(class: "miti-date-range__field miti-date-range__field--start") {
           start_input + calendar_icon("miti-date-range", "start")
@@ -143,7 +149,7 @@ module Miti
         value.to_s.tr("_", "-") if value
       end
 
-      def build_range_input(object_name, method, value)
+      def build_range_input(object_name, method, value, html_options = {})
         tag_options = {
           type: "text",
           autocomplete: "off",
@@ -152,7 +158,7 @@ module Miti
           class: "miti-date-field",
           value: value&.to_s,
           name: "#{object_name}[#{method}]"
-        }
+        }.merge(html_options)
         ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
       end
 
