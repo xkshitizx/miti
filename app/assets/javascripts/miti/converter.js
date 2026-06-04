@@ -1,15 +1,47 @@
+const DATA_URL = "/miti/calendar_data"
+const STORAGE_KEY = "miti-calendar-data"
+
 const MitiConverter = {
   data: null,
+  _loading: null,
 
   init() {
-    if (this.data) return
+    if (this.data) return this
+    if (this._loading) return this
+
     const el = document.getElementById("miti-calendar-data")
-    if (!el) return
-    try {
-      this.data = JSON.parse(el.textContent)
-    } catch (e) {
-      console.warn("Miti: failed to parse calendar data", e)
+    if (el) {
+      try {
+        this.data = JSON.parse(el.textContent)
+        return this
+      } catch (e) {
+        console.warn("Miti: failed to parse embedded calendar data", e)
+      }
     }
+
+    const cached = localStorage.getItem(STORAGE_KEY)
+    if (cached) {
+      try {
+        this.data = JSON.parse(cached)
+        return this
+      } catch (e) {
+        localStorage.removeItem(STORAGE_KEY)
+      }
+    }
+
+    this._loading = fetch(DATA_URL)
+      .then(r => r.json())
+      .then(data => {
+        this.data = data
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+        this._loading = null
+      })
+      .catch(e => {
+        console.warn("Miti: failed to fetch calendar data", e)
+        this._loading = null
+      })
+
+    return this
   },
 
   monthsEnglish() {
