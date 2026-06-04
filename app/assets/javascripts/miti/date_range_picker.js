@@ -262,7 +262,7 @@ export default class MitiDateRangePicker {
 
     html += `</tbody></table>`
 
-    const hint = this.endDate ? "" : "Select end date"
+    const hint = (this.startDate && !this.endDate) ? "Select end date" : ""
     if (hint) {
       html += `<div class="miti-date-picker__footer miti-date-picker__footer--hint">${hint}</div>`
     } else if (today) {

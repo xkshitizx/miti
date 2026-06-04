@@ -5,12 +5,15 @@ export default class extends Controller {
   static values = { value: String }
 
   connect() {
+    if (this.element.dataset.mitiInitialized) return
+    this.element.dataset.mitiInitialized = "true"
     this._picker = new MitiDatePicker(this.element)
     this._picker.attach()
   }
 
   disconnect() {
     this._picker?.destroy()
+    this._picker = null
   }
 
   open(event) { this._picker?.open(event) }
