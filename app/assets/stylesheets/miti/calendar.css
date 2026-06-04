@@ -1,18 +1,188 @@
-/* Miti Calendar */
+[data-miti-theme="light"],
 :root {
   --miti-bg-base: #fff;
   --miti-bg-hover: #f3f4f6;
   --miti-bg-selected: #2563eb;
   --miti-bg-selected-hover: #1d4ed8;
+  --miti-bg-today: #eff6ff;
   --miti-bg-today-btn-hover: #eff6ff;
+  --miti-bg-other: #fafafa;
+  --miti-bg-popover: #fff;
+  --miti-bg-today-item: #fefce8;
+  --miti-text-base: #111827;
+  --miti-text-muted: #6b7280;
+  --miti-text-faint: #9ca3af;
+  --miti-text-very-faint: #d1d5db;
   --miti-text-accent: #2563eb;
+  --miti-text-sun: #ef4444;
+  --miti-text-sat: #ef4444;
+  --miti-text-selected: #fff;
+  --miti-border-color: #d1d5db;
+  --miti-border-light: #e5e7eb;
+  --miti-border-very-light: #f3f4f6;
+  --miti-border-today: #93c5fd;
+  --miti-border-today-item: #fde68a;
   --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-miti-theme="dark"] {
+  --miti-bg-base: #374151;
+  --miti-bg-hover: #4b5563;
+  --miti-bg-selected: #3b82f6;
+  --miti-bg-selected-hover: #2563eb;
+  --miti-bg-today: #1e40af;
+  --miti-bg-today-btn-hover: #1e3a5f;
+  --miti-bg-other: #1f2937;
+  --miti-bg-popover: #374151;
+  --miti-bg-today-item: #422006;
+  --miti-text-base: #ffffff;
+  --miti-text-muted: #e5e7eb;
+  --miti-text-faint: #d1d5db;
+  --miti-text-very-faint: #9ca3af;
+  --miti-text-accent: #93c5fd;
+  --miti-text-sun: #fca5a5;
+  --miti-text-sat: #fca5a5;
+  --miti-text-selected: #fff;
+  --miti-border-color: #6b7280;
+  --miti-border-light: #4b5563;
+  --miti-border-very-light: #4b5563;
+  --miti-border-today: #60a5fa;
+  --miti-border-today-item: #92400e;
+  --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-miti-theme="indigo"] {
+  --miti-bg-base: #fff;
+  --miti-bg-hover: #f5f3ff;
+  --miti-bg-selected: #7c3aed;
+  --miti-bg-selected-hover: #6d28d9;
+  --miti-bg-today: #f5f3ff;
+  --miti-bg-today-btn-hover: #f5f3ff;
+  --miti-bg-other: #fafafa;
+  --miti-bg-popover: #fff;
+  --miti-bg-today-item: #fefce8;
+  --miti-text-base: #111827;
+  --miti-text-muted: #6b7280;
+  --miti-text-faint: #9ca3af;
+  --miti-text-very-faint: #d1d5db;
+  --miti-text-accent: #7c3aed;
+  --miti-text-sun: #ef4444;
+  --miti-text-sat: #ef4444;
+  --miti-text-selected: #fff;
+  --miti-border-color: #d1d5db;
+  --miti-border-light: #e5e7eb;
+  --miti-border-very-light: #f3f4f6;
+  --miti-border-today: #a78bfa;
+  --miti-border-today-item: #fde68a;
+  --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-miti-theme="midnight"] {
+  --miti-bg-base: #0f0a1a;
+  --miti-bg-hover: #2d1b4e;
+  --miti-bg-selected: #a855f7;
+  --miti-bg-selected-hover: #9333ea;
+  --miti-bg-today: #1a0d33;
+  --miti-bg-today-btn-hover: #1a0d33;
+  --miti-bg-other: #080511;
+  --miti-bg-popover: #120825;
+  --miti-bg-today-item: #2d1b4e;
+  --miti-text-base: #ffffff;
+  --miti-text-muted: #e9d5ff;
+  --miti-text-faint: #c084fc;
+  --miti-text-very-faint: #7c3aed;
+  --miti-text-accent: #c084fc;
+  --miti-text-sun: #fb7185;
+  --miti-text-sat: #fb7185;
+  --miti-text-selected: #fff;
+  --miti-border-color: #3b1f6e;
+  --miti-border-light: #2d1b4e;
+  --miti-border-very-light: #1a0d33;
+  --miti-border-today: #a855f7;
+  --miti-border-today-item: #7c3aed;
+  --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 24px rgba(168, 85, 247, 0.25);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-miti-theme="tokyo-night"] {
+  --miti-bg-base: #1a1b26;
+  --miti-bg-hover: #2f3346;
+  --miti-bg-selected: #7aa2f7;
+  --miti-bg-selected-hover: #5d8fe8;
+  --miti-bg-today: #24283b;
+  --miti-bg-today-btn-hover: #24283b;
+  --miti-bg-other: #13141f;
+  --miti-bg-popover: #1a1b26;
+  --miti-bg-today-item: #2f3346;
+  --miti-text-base: #c0caf5;
+  --miti-text-muted: #a9b1d6;
+  --miti-text-faint: #565f89;
+  --miti-text-very-faint: #3b4261;
+  --miti-text-accent: #7dcfff;
+  --miti-text-sun: #f7768e;
+  --miti-text-sat: #bb9af7;
+  --miti-text-selected: #1a1b26;
+  --miti-border-color: #2f3346;
+  --miti-border-light: #24283b;
+  --miti-border-very-light: #1f2335;
+  --miti-border-today: #7aa2f7;
+  --miti-border-today-item: #3b4261;
+  --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-miti-theme="nord"] {
+  --miti-bg-base: #3b4252;
+  --miti-bg-hover: #434c5e;
+  --miti-bg-selected: #5e81ac;
+  --miti-bg-selected-hover: #4c7a9d;
+  --miti-bg-today: #2e3440;
+  --miti-bg-today-btn-hover: #2e3440;
+  --miti-bg-other: #2e3440;
+  --miti-bg-popover: #3b4252;
+  --miti-bg-today-item: #434c5e;
+  --miti-text-base: #e5e9f0;
+  --miti-text-muted: #d8dee9;
+  --miti-text-faint: #81a1c1;
+  --miti-text-very-faint: #616e88;
+  --miti-text-accent: #88c0d0;
+  --miti-text-sun: #bf616a;
+  --miti-text-sat: #b48ead;
+  --miti-text-selected: #fff;
+  --miti-border-color: #4c566a;
+  --miti-border-light: #434c5e;
+  --miti-border-very-light: #2e3440;
+  --miti-border-today: #88c0d0;
+  --miti-border-today-item: #5e81ac;
+  --miti-border-radius-sm: 4px;
+  --miti-border-radius-md: 6px;
+  --miti-border-radius-lg: 8px;
+  --miti-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --miti-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .miti-calendar {
   width: 100%;
   border-collapse: collapse;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--miti-font-family);
 }
 
 .miti-calendar__header {
@@ -20,40 +190,41 @@
   text-align: center;
   font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--miti-text-muted);
   text-transform: uppercase;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--miti-border-light);
 }
 
 .miti-calendar__day {
   padding: 8px 4px;
   text-align: center;
   vertical-align: top;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--miti-border-very-light);
   cursor: default;
+  color: var(--miti-text-base);
 }
 
 .miti-calendar__day--today {
-  background: #eff6ff;
-  border-color: #93c5fd;
+  background: var(--miti-bg-today);
+  border-color: var(--miti-border-today);
 }
 
 .miti-calendar__day--today .miti-calendar__gatey {
   font-weight: 700;
-  color: #2563eb;
+  color: var(--miti-text-accent);
 }
 
 .miti-calendar__day--sun {
-  color: #ef4444;
+  color: var(--miti-text-sun);
 }
 
 .miti-calendar__day--sat {
-  color: #ef4444;
+  color: var(--miti-text-sat);
 }
 
 .miti-calendar__day--other {
-  color: #d1d5db;
-  background: #fafafa;
+  color: var(--miti-text-very-faint);
+  background: var(--miti-bg-other);
 }
 
 .miti-calendar__gatey {
@@ -65,7 +236,7 @@
 .miti-calendar__ad-date {
   display: block;
   font-size: 10px;
-  color: #9ca3af;
+  color: var(--miti-text-faint);
 }
 
 .miti-calendar__nav {
@@ -79,30 +250,29 @@
 .miti-calendar__title {
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: var(--miti-text-base);
 }
 
 .miti-calendar__title em {
   font-weight: 400;
   font-style: italic;
-  color: #6b7280;
+  color: var(--miti-text-muted);
 }
 
 .miti-calendar__nav-link {
   text-decoration: none;
   font-size: 18px;
-  color: #6b7280;
+  color: var(--miti-text-muted);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--miti-border-radius-sm);
   transition: background 0.15s, color 0.15s;
 }
 
 .miti-calendar__nav-link:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--miti-bg-hover);
+  color: var(--miti-text-base);
 }
 
-/* Miti Agenda */
 .miti-agenda__group {
   margin-bottom: 24px;
 }
@@ -110,10 +280,10 @@
 .miti-agenda__header {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--miti-text-muted);
   margin: 0 0 8px;
   padding-bottom: 4px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--miti-border-light);
 }
 
 .miti-agenda__list {
@@ -126,15 +296,15 @@
   display: flex;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--miti-border-very-light);
 }
 
 .miti-agenda__item--today {
-  background: #fefce8;
+  background: var(--miti-bg-today-item);
   margin: 0 -8px;
   padding: 8px;
-  border-radius: 4px;
-  border-bottom-color: #fde68a;
+  border-radius: var(--miti-border-radius-sm);
+  border-bottom-color: var(--miti-border-today-item);
 }
 
 .miti-agenda__date {
@@ -145,20 +315,19 @@
 .miti-agenda__bs {
   display: block;
   font-weight: 500;
-  color: #111827;
+  color: var(--miti-text-base);
 }
 
 .miti-agenda__ad {
   display: block;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--miti-text-faint);
 }
 
 .miti-agenda__content {
   flex: 1;
 }
 
-/* Miti Date Field */
 .miti-date-field-wrapper {
   position: relative;
   display: inline-flex;
@@ -169,21 +338,24 @@
 
 .miti-date-field {
   padding: 4px 28px 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
+  border: 1px solid var(--miti-border-color);
+  border-radius: var(--miti-border-radius-sm);
   font-size: 13px;
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: var(--miti-font-family);
+  color: var(--miti-text-base);
+  background: var(--miti-bg-base);
 }
 
 .miti-date-field:hover {
-  border-color: #9ca3af;
+  border-color: var(--miti-text-faint);
 }
 
 .miti-date-field:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--miti-text-accent);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
@@ -199,38 +371,37 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--miti-text-muted);
   cursor: pointer;
   transition: color 0.15s;
   z-index: 1;
 }
 
 .miti-date-field__icon:hover {
-  color: #3b82f6;
+  color: var(--miti-text-accent);
 }
 
-/* Miti Date Select */
 .miti-date-select__year,
 .miti-date-select__month,
 .miti-date-select__day {
   padding: 6px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border: 1px solid var(--miti-border-color);
+  border-radius: var(--miti-border-radius-md);
   font-size: 14px;
-  background: white;
+  background: var(--miti-bg-base);
+  color: var(--miti-text-base);
 }
 
-/* Miti Date Picker Popover */
 .miti-date-picker-popover {
   position: absolute;
   z-index: 9999;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  background: var(--miti-bg-popover);
+  border: 1px solid var(--miti-border-light);
+  border-radius: var(--miti-border-radius-lg);
+  box-shadow: var(--miti-shadow-popover);
   padding: 12px;
   width: 260px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--miti-font-family);
 }
 
 .miti-date-picker__nav {
@@ -243,23 +414,23 @@
 .miti-date-picker__title {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--miti-text-base);
 }
 
 .miti-date-picker__nav-btn {
   background: none;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--miti-border-radius-sm);
   padding: 4px 8px;
   cursor: pointer;
   font-size: 16px;
-  color: #6b7280;
+  color: var(--miti-text-muted);
   transition: background 0.15s;
 }
 
 .miti-date-picker__nav-btn:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--miti-bg-hover);
+  color: var(--miti-text-base);
 }
 
 .miti-date-picker__calendar {
@@ -272,7 +443,7 @@
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--miti-text-faint);
 }
 
 .miti-date-picker__day {
@@ -280,47 +451,43 @@
   text-align: center;
   font-size: 13px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--miti-border-radius-sm);
   transition: background 0.1s;
+  color: var(--miti-text-base);
 }
 
 .miti-date-picker__day:hover {
-  background: #f3f4f6;
+  background: var(--miti-bg-hover);
 }
 
 .miti-date-picker__day--today {
-  color: #2563eb;
+  color: var(--miti-text-accent);
   font-weight: 600;
 }
 
 .miti-date-picker__day--selected {
-  background: #2563eb;
-  color: white;
+  background: var(--miti-bg-selected);
+  color: var(--miti-text-selected);
   font-weight: 600;
-  border-radius: 4px;
+  border-radius: var(--miti-border-radius-sm);
 }
 
 .miti-date-picker__day--selected:hover {
-  background: #1d4ed8;
+  background: var(--miti-bg-selected-hover);
 }
 
 .miti-date-picker__day--sun,
 .miti-date-picker__day--sat {
-  color: #ef4444;
+  color: var(--miti-text-sun);
 }
 
 .miti-date-picker__day--selected.miti-date-picker__day--sun,
 .miti-date-picker__day--selected.miti-date-picker__day--sat {
-  color: white;
-}
-
-.miti-date-picker__day--selected.miti-date-picker__day--sun:hover,
-.miti-date-picker__day--selected.miti-date-picker__day--sat:hover {
-  color: white;
+  color: var(--miti-text-selected);
 }
 
 .miti-date-picker__day--other {
-  color: #d1d5db;
+  color: var(--miti-text-very-faint);
   cursor: default;
 }
 
@@ -332,25 +499,24 @@
   text-align: center;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--miti-border-very-light);
 }
 
 .miti-date-picker__today-btn {
   background: none;
   border: none;
-  color: #2563eb;
+  color: var(--miti-text-accent);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--miti-border-radius-sm);
 }
 
 .miti-date-picker__today-btn:hover {
   background: var(--miti-bg-today-btn-hover);
 }
 
-/* Miti Date Picker grid (month/year picker) */
 .miti-date-picker__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -365,6 +531,7 @@
   cursor: pointer;
   border-radius: var(--miti-border-radius-sm);
   transition: background 0.1s;
+  color: var(--miti-text-base);
 }
 
 .miti-date-picker__cell:hover {
@@ -378,7 +545,7 @@
 
 .miti-date-picker__cell--selected {
   background: var(--miti-bg-selected);
-  color: var(--miti-bg-base);
+  color: var(--miti-text-selected);
   font-weight: 600;
 }
 
