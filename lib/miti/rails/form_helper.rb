@@ -14,8 +14,9 @@ module Miti
       end
 
       def nepali_date_field(object_name, method, options = {})
-        object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
+        object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
         default_val = options.delete(:value)
+        theme = options.delete(:theme).to_s.tr("_", "-") if options.key?(:theme)
         value = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
 
         tag_options = {
@@ -34,11 +35,12 @@ module Miti
 
         icon = calendar_icon
         wrapper_data = { controller: "miti-date-picker", "miti-date-picker-value-value": value&.to_s }
+        wrapper_data[:"miti-theme"] = theme if theme
         tag.div(class: "miti-date-field-wrapper", data: wrapper_data) { input + icon }
       end
 
       def nepali_date_select(object_name, method, options = {})
-        object = options.delete(:object) || instance_variable_get(:"@#{object_name}")
+        object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
         value  = bs_value_for(object, method)
         field_method = select_method_for(object, method)
 
@@ -135,11 +137,11 @@ module Miti
   module Rails
     module FormBuilderMethods
       def nepali_date_field(method, options = {})
-        @template.nepali_date_field(@object_name, method, options.merge(object: @object))
+        @template.nepali_date_field(@object_name, method, options.reverse_merge(object: @object))
       end
 
       def nepali_date_select(method, options = {})
-        @template.nepali_date_select(@object_name, method, options.merge(object: @object))
+        @template.nepali_date_select(@object_name, method, options.reverse_merge(object: @object))
       end
     end
   end
