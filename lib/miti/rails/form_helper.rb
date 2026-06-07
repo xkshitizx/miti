@@ -44,58 +44,15 @@ module Miti
       def nepali_date_range_field(object_name, start_method, end_method, options = {})
         object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
         theme = normalize_theme(options.delete(:theme))
-        start_default = options.delete(:start_value)
-        end_default = options.delete(:end_value)
+        start_val = parse_range_value(options.delete(:start_value), object, start_method)
+        end_val = parse_range_value(options.delete(:end_value), object, end_method)
         trigger_html = options.delete(:trigger_html) || {}
 
-        start_val = start_default ? parse_bs_value(start_default) : bs_value_for(object, start_method)
-        end_val = end_default ? parse_bs_value(end_default) : bs_value_for(object, end_method)
-
-        name_prefix = object_name.presence ? "#{object_name}[" : nil
-        name_suffix = object_name.presence ? "]" : nil
-
-        start_hidden = tag.input(type: "hidden",
-          name: "#{name_prefix}#{start_method}#{name_suffix}",
-          value: start_val&.to_s,
-          id: "#{object_name}_#{start_method}".delete_prefix("_"),
-          data: { "miti-range-target": "start" })
-        end_hidden = tag.input(type: "hidden",
-          name: "#{name_prefix}#{end_method}#{name_suffix}",
-          value: end_val&.to_s,
-          id: "#{object_name}_#{end_method}".delete_prefix("_"),
-          data: { "miti-range-target": "end" })
-
-        display_value = [start_val&.to_s, end_val&.to_s].compact.reject(&:empty?)
-        display_text = display_value.any? ? display_value.join(" — ") : nil
-
-        display_opts = {
-          type: "text",
-          readonly: true,
-          placeholder: "Select date range",
-          class: "miti-date-range__display",
-          value: display_text,
-          data: {
-            action: "focus->miti-date-range#open blur->miti-date-range#blur keydown->miti-date-range#keydown"
-          }
-        }.merge(trigger_html) do |key, old_val, new_val|
-          key == :data ? old_val.deep_merge(new_val) : new_val
-        end
-
-        display_input = tag.input(**display_opts)
-
-        trigger = tag.div(class: "miti-date-range__trigger") {
-          display_input + calendar_icon("miti-date-range")
-        }
-
-        wrapper_data = {
-          controller: "miti-date-range",
-          "miti-date-range-start-value": start_val&.to_s,
-          "miti-date-range-end-value": end_val&.to_s
-        }
-        wrapper_data[:"miti-theme"] = theme if theme
-
-        tag.div(class: "miti-date-range-wrapper", data: wrapper_data) do
-          start_hidden + end_hidden + trigger
+        tag.div(class: "miti-date-range-wrapper",
+                data: range_wrapper_data(start_val, end_val, theme)) do
+          range_hidden_input(object_name, start_method, start_val, "start") +
+            range_hidden_input(object_name, end_method, end_val, "end") +
+            range_trigger(start_val, end_val, trigger_html)
         end
       end
 
@@ -171,24 +128,49 @@ module Miti
       end
 
       def normalize_theme(value)
-        value.to_s.tr("_", "-") if value
-      end
-
-      def build_range_input(object_name, method, value, html_options = {})
-        tag_options = {
-          type: "text",
-          autocomplete: "off",
-          placeholder: "YYYY-MM-DD",
-          readonly: true,
-          class: "miti-date-field",
-          value: value&.to_s,
-          name: "#{object_name}[#{method}]"
-        }.merge(html_options)
-        ActionView::Helpers::Tags::TextField.new(object_name, method, self, tag_options).render
+        value&.to_s&.tr("_", "-")
       end
 
       def parse_bs_value(value)
         convert_to_nepali(value)
+      end
+
+      def parse_range_value(default, object, method)
+        default ? parse_bs_value(default) : bs_value_for(object, method)
+      end
+
+      def range_hidden_input(object_name, method, value, target)
+        name = "#{object_name.presence}[#{method}]".delete_prefix("[")
+        tag.input(type: "hidden",
+                  name: name,
+                  value: value&.to_s,
+                  id: "#{object_name}_#{method}".delete_prefix("_"),
+                  data: { "miti-range-target": target })
+      end
+
+      def range_trigger(start_val, end_val, trigger_html)
+        display_text = [start_val&.to_s, end_val&.to_s].compact.reject(&:empty?)
+        display_text = display_text.any? ? display_text.join(" — ") : nil
+
+        opts = {
+          type: "text", readonly: true, placeholder: "Select date range",
+          class: "miti-date-range__display", value: display_text,
+          data: { action: "focus->miti-date-range#open blur->miti-date-range#blur keydown->miti-date-range#keydown" }
+        }.merge(trigger_html) { |k, old, new| k == :data ? old.deep_merge(new) : new }
+
+        tag.div(class: "miti-date-range__trigger") do
+          tag.input(**opts) + calendar_icon("miti-date-range")
+        end
+      end
+
+      def range_wrapper_data(start_val, end_val, theme)
+        data = {
+          controller: "miti-date-range",
+          "miti-date-range-start-value": start_val&.to_s,
+          "miti-date-range-end-value": end_val&.to_s
+        }
+        data[:"miti-theme"] = theme if theme
+        data
       end
 
       def convert_to_nepali(value)
@@ -221,7 +203,8 @@ module Miti
       end
 
       def nepali_date_range_field(start_method, end_method, options = {})
-        @template.nepali_date_range_field(@object_name, start_method, end_method, options.reverse_merge(object: @object))
+        @template.nepali_date_range_field(@object_name, start_method, end_method,
+                                          options.reverse_merge(object: @object))
       end
 
       def nepali_date_select(method, options = {})

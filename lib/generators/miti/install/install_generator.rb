@@ -61,12 +61,10 @@ module Miti
       end
 
       def copy_assets
-        if options.copy_styles?
-          copy_css_to_app
-        end
-        if options.copy_javascript? || uses_bundler?
-          copy_javascript_files
-        end
+        copy_css_to_app if options.copy_styles?
+        return unless options.copy_javascript? || uses_bundler?
+
+        copy_javascript_files
       end
 
       private
@@ -102,8 +100,8 @@ module Miti
 
       def write_js_file(js_dir, basename)
         content = File.read(gem_asset_path("#{basename}.js"))
-                     .gsub('"miti/converter"', '"./converter"')
-                     .gsub('"miti/date_picker"', '"./date_picker"')
+                      .gsub('"miti/converter"', '"./converter"')
+                      .gsub('"miti/date_picker"', '"./date_picker"')
         create_file "#{js_dir}/#{basename}.js", content
       end
 

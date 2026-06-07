@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Miti
   class CalendarDataController < ActionController::Base
     skip_before_action :verify_authenticity_token, only: :show
