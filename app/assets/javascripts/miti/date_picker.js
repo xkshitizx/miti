@@ -26,6 +26,8 @@ export default class MitiDatePicker {
 
   attach() {
     if (!this.input) return
+    if (this.element._mitiPicker) return
+    this.element._mitiPicker = this
     if (this._attached) return
     this._attached = true
     MitiConverter.init()
@@ -199,9 +201,10 @@ export default class MitiDatePicker {
     const today = MitiConverter.today()
     const inputVal = this.input.value
 
+    const showYear = !today || this.currentYear !== today.barsa
     let html = `<div class="miti-date-picker__nav">`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="prev">&larr;</button>`
-    html += `<span class="miti-date-picker__title" data-miti-title>${monthName} ${this.currentYear}</span>`
+    html += `<span class="miti-date-picker__title" data-miti-title>${monthName}${showYear ? ` ${this.currentYear}` : ""}</span>`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="next">&rarr;</button>`
     html += `</div>`
 
@@ -253,9 +256,10 @@ export default class MitiDatePicker {
     const months = MitiConverter.monthsEnglish()
     const today = MitiConverter.today()
 
+    const showYear = !today || this.currentYear !== today.barsa
     let html = `<div class="miti-date-picker__nav">`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="prev">&larr;</button>`
-    html += `<span class="miti-date-picker__title" data-miti-title>${this.currentYear}</span>`
+    html += `<span class="miti-date-picker__title" data-miti-title>${showYear ? this.currentYear : ""}</span>`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="next">&rarr;</button>`
     html += `</div>`
 

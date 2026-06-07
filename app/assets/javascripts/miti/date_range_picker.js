@@ -5,10 +5,10 @@ const OPEN_CLASS = "miti-date-picker--open"
 export default class MitiDateRangePicker {
   constructor(element) {
     this.element = element
-    this.startInput = element.querySelector(".miti-date-range__field--start .miti-date-field")
-    this.endInput = element.querySelector(".miti-date-range__field--end .miti-date-field")
-    this.startIcon = element.querySelector(".miti-date-range__field--start .miti-date-field__icon")
-    this.endIcon = element.querySelector(".miti-date-range__field--end .miti-date-field__icon")
+    this.startInput = element.querySelector("[data-miti-range-target=start]")
+    this.endInput = element.querySelector("[data-miti-range-target=end]")
+    this.displayInput = element.querySelector(".miti-date-range__display")
+    this.icon = element.querySelector(".miti-date-field__icon")
     this.theme = element.dataset.mitiTheme
     if (!this.theme) {
       const auto = element.closest("[data-miti-theme-auto]")
@@ -27,20 +27,26 @@ export default class MitiDateRangePicker {
     this.endDate = null
     this._activeField = null
     this._listeners = []
+    this._dragStart = null
+    this._dragActive = false
+    this._wasDragged = false
+    this._dragRaf = null
   }
 
   attach() {
+    if (this.element._mitiRangePicker) return
+    this.element._mitiRangePicker = this
     if (this._attached) return
     this._attached = true
     MitiConverter.init()
-    this._on(this.startInput, "focus", (e) => this.open(e, "start"))
-    this._on(this.endInput, "focus", (e) => this.open(e, "end"))
-    this._on(this.startInput, "blur", (e) => this.blur(e))
-    this._on(this.endInput, "blur", (e) => this.blur(e))
-    this._on(this.startInput, "keydown", (e) => this.keydown(e))
-    this._on(this.endInput, "keydown", (e) => this.keydown(e))
-    if (this.startIcon) this._on(this.startIcon, "click", (e) => this.open(e, "start"))
-    if (this.endIcon) this._on(this.endIcon, "click", (e) => this.open(e, "end"))
+    if (this.displayInput) {
+      this._on(this.displayInput, "focus", (e) => this.open(e, "start"))
+      this._on(this.displayInput, "blur", (e) => this.blur(e))
+      this._on(this.displayInput, "keydown", (e) => this.keydown(e))
+    }
+    if (this.icon) this._on(this.icon, "click", (e) => this.open(e, "start"))
+    this._parseDates()
+    this._updateDisplayOnly()
   }
 
   destroy() {
@@ -55,9 +61,12 @@ export default class MitiDateRangePicker {
 
   open(event, field) {
     this._activeField = field
-    const input = field === "end" ? this.endInput : this.startInput
-    if (!input) return
-    this._activeInput = input
+    this._activeInput = this.displayInput || this.startInput
+    if (!this._activeInput) return
+
+    this._dragStart = null
+    this._dragActive = false
+    this._wasDragged = false
 
     if (event && event.type === "focus") {
       this._clearBlurTimeout()
@@ -65,6 +74,7 @@ export default class MitiDateRangePicker {
 
     if (this.popover) {
       this._parseDates()
+      this._updateDisplayOnly()
       this.view = "day"
       this._renderPopoverContent()
       this.popover.style.display = "block"
@@ -74,6 +84,7 @@ export default class MitiDateRangePicker {
     }
 
     this._parseDates()
+    this._updateDisplayOnly()
     this.view = "day"
     this._buildPopover()
     this._reposition()
@@ -84,6 +95,12 @@ export default class MitiDateRangePicker {
 
   close() {
     this._clearBlurTimeout()
+    this._dragStart = null
+    this._dragActive = false
+    if (this._dragRaf) {
+      cancelAnimationFrame(this._dragRaf)
+      this._dragRaf = null
+    }
     if (this.popover) {
       this.popover.style.display = "none"
     }
@@ -106,7 +123,7 @@ export default class MitiDateRangePicker {
           this._renderPopoverContent()
         } else {
           this.close()
-          this._activeInput?.focus()
+          ;(this.displayInput || this._activeInput)?.focus()
         }
         break
       case "Enter":
@@ -126,7 +143,22 @@ export default class MitiDateRangePicker {
     this.popover.className = "miti-date-picker-popover"
     if (this.theme) this.popover.dataset.mitiTheme = this.theme
 
-    this._on(this.popover, "mousedown", () => this._clearBlurTimeout())
+    this._on(this.popover, "mousedown", (e) => {
+      this._clearBlurTimeout()
+      const day = e.target.closest("[data-miti-day]")
+      if (day) {
+        e.preventDefault()
+        this._startDrag(day)
+      }
+    })
+
+    this._on(this.popover, "mouseover", (e) => {
+      if (!this._dragStart) return
+      const day = e.target.closest("[data-miti-day]")
+      if (day) this._updateDrag(day)
+    })
+
+    this._on(document, "mouseup", (e) => this._endDrag(e))
 
     this._on(this.popover, "click", (e) => {
       this._clearBlurTimeout()
@@ -164,6 +196,7 @@ export default class MitiDateRangePicker {
 
       const day = e.target.closest("[data-miti-day]")
       if (day) {
+        if (this._wasDragged) { this._wasDragged = false; return }
         this._selectDay(day)
         return
       }
@@ -187,6 +220,16 @@ export default class MitiDateRangePicker {
     }
     this.startDate = parse(this.startInput)
     this.endDate = parse(this.endInput)
+
+    if (!this.startInput && this.displayInput?.value) {
+      const parts = this.displayInput.value.split(/\s*[—–-]\s*/)
+      if (parts.length === 2) {
+        this.startDate = parse({ value: parts[0].trim() })
+        this.endDate = parse({ value: parts[1].trim() })
+      } else {
+        this.startDate = parse({ value: parts[0]?.trim() })
+      }
+    }
 
     const ref = this.startDate || this.endDate
     if (ref) {
@@ -218,7 +261,8 @@ export default class MitiDateRangePicker {
 
     let html = `<div class="miti-date-picker__nav">`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="prev">&larr;</button>`
-    html += `<span class="miti-date-picker__title" data-miti-title>${monthName} ${this.currentYear}</span>`
+    const showYear = !today || this.currentYear !== today.barsa
+    html += `<span class="miti-date-picker__title" data-miti-title>${monthName}${showYear ? ` ${this.currentYear}` : ""}</span>`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="next">&rarr;</button>`
     html += `</div>`
 
@@ -276,9 +320,10 @@ export default class MitiDateRangePicker {
     const months = MitiConverter.monthsEnglish()
     const today = MitiConverter.today()
 
+    const showYear = !today || this.currentYear !== today.barsa
     let html = `<div class="miti-date-picker__nav">`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="prev">&larr;</button>`
-    html += `<span class="miti-date-picker__title" data-miti-title>${this.currentYear}</span>`
+    html += `<span class="miti-date-picker__title" data-miti-title>${showYear ? this.currentYear : ""}</span>`
     html += `<button type="button" class="miti-date-picker__nav-btn" data-miti-nav="next">&rarr;</button>`
     html += `</div>`
 
@@ -343,7 +388,26 @@ export default class MitiDateRangePicker {
     const barsa = parseInt(dayEl.dataset.barsa, 10)
     const mahina = parseInt(dayEl.dataset.mahina, 10)
 
-    if (!this.startDate || (this.startDate && this.endDate)) {
+    if (this.startDate && this.endDate) {
+      const clickedVal = this._dateToValue(barsa, mahina, gatey)
+      const startVal = this._dateToValue(this.startDate.barsa, this.startDate.mahina, this.startDate.gatey)
+      const endVal = this._dateToValue(this.endDate.barsa, this.endDate.mahina, this.endDate.gatey)
+
+      if (clickedVal < startVal) {
+        this.startDate = { barsa, mahina, gatey }
+        this.currentYear = barsa
+        this.currentMonth = mahina
+        this._renderPopoverContent()
+        this._dispatchChange("start")
+      } else if (clickedVal > endVal) {
+        this.endDate = { barsa, mahina, gatey }
+        this._updateInputs()
+        this.close()
+      }
+      return
+    }
+
+    if (!this.startDate) {
       this.startDate = { barsa, mahina, gatey }
       this.endDate = null
       this.currentYear = barsa
@@ -365,6 +429,65 @@ export default class MitiDateRangePicker {
     }
   }
 
+  _startDrag(dayEl) {
+    const gatey = parseInt(dayEl.dataset.gatey, 10)
+    const barsa = parseInt(dayEl.dataset.barsa, 10)
+    const mahina = parseInt(dayEl.dataset.mahina, 10)
+    this._dragStart = { barsa, mahina, gatey }
+    this._dragActive = false
+  }
+
+  _updateDrag(dayEl) {
+    if (!this._dragStart) return
+
+    const gatey = parseInt(dayEl.dataset.gatey, 10)
+    const barsa = parseInt(dayEl.dataset.barsa, 10)
+    const mahina = parseInt(dayEl.dataset.mahina, 10)
+
+    if (!this._dragActive) {
+      this._dragActive = true
+      this.startDate = null
+      this.endDate = null
+    }
+
+    const startVal = this._dateToValue(this._dragStart.barsa, this._dragStart.mahina, this._dragStart.gatey)
+    const currentVal = this._dateToValue(barsa, mahina, gatey)
+
+    if (currentVal < startVal) {
+      this.startDate = { barsa, mahina, gatey }
+      this.endDate = { ...this._dragStart }
+    } else {
+      this.startDate = { ...this._dragStart }
+      this.endDate = { barsa, mahina, gatey }
+    }
+
+    this.currentYear = barsa
+    this.currentMonth = mahina
+
+    if (this._dragRaf) cancelAnimationFrame(this._dragRaf)
+    this._dragRaf = requestAnimationFrame(() => this._renderPopoverContent())
+  }
+
+  _endDrag(e) {
+    if (!this._dragStart) return
+
+    if (this._dragActive) {
+      e.preventDefault()
+      this._wasDragged = true
+      if (this.startDate && this.endDate) {
+        this._updateInputs()
+        this.close()
+      }
+    }
+
+    this._dragStart = null
+    this._dragActive = false
+    if (this._dragRaf) {
+      cancelAnimationFrame(this._dragRaf)
+      this._dragRaf = null
+    }
+  }
+
   _goToday() {
     const today = MitiConverter.today()
     if (!today) return
@@ -380,12 +503,59 @@ export default class MitiDateRangePicker {
 
   _updateInputs() {
     if (this.startDate) {
-      this.startInput.value = MitiConverter.formatBs(this.startDate.barsa, this.startDate.mahina, this.startDate.gatey)
+      const formatted = MitiConverter.formatBs(this.startDate.barsa, this.startDate.mahina, this.startDate.gatey)
+      if (this.startInput) this.startInput.value = formatted
     }
     if (this.endDate) {
-      this.endInput.value = MitiConverter.formatBs(this.endDate.barsa, this.endDate.mahina, this.endDate.gatey)
+      const formatted = MitiConverter.formatBs(this.endDate.barsa, this.endDate.mahina, this.endDate.gatey)
+      if (this.endInput) this.endInput.value = formatted
+    }
+    if (this.displayInput) {
+      this.displayInput.value = this._formatRangeDisplay()
     }
     this._dispatchChange("end")
+    this.element.dispatchEvent(new CustomEvent("miti:range-selected", {
+      bubbles: true,
+      detail: {
+        startDate: this.startDate ? MitiConverter.formatBs(this.startDate.barsa, this.startDate.mahina, this.startDate.gatey) : null,
+        endDate: this.endDate ? MitiConverter.formatBs(this.endDate.barsa, this.endDate.mahina, this.endDate.gatey) : null
+      }
+    }))
+  }
+
+  _updateDisplayOnly() {
+    if (this.displayInput) {
+      this.displayInput.value = this._formatRangeDisplay()
+    }
+  }
+
+  _formatRangeDisplay() {
+    if (!this.startDate || !this.endDate) {
+      if (this.startDate) {
+        return MitiConverter.formatBs(this.startDate.barsa, this.startDate.mahina, this.startDate.gatey)
+      }
+      return ""
+    }
+
+    const td = MitiConverter.today()
+    const months = MitiConverter.monthsEnglish()
+    const isCurrentYear = td && this.startDate.barsa === td.barsa && this.endDate.barsa === td.barsa
+    const sameYear = this.startDate.barsa === this.endDate.barsa
+    const sameMonth = sameYear && this.startDate.mahina === this.endDate.mahina
+
+    if (sameMonth) {
+      const m = months[this.startDate.mahina - 1]
+      return `${m} ${this.startDate.gatey}–${this.endDate.gatey}${isCurrentYear ? "" : `, ${this.startDate.barsa}`}`
+    }
+
+    const sm = months[this.startDate.mahina - 1]
+    const em = months[this.endDate.mahina - 1]
+
+    if (isCurrentYear) {
+      return `${sm} ${this.startDate.gatey} – ${em} ${this.endDate.gatey}`
+    }
+
+    return `${sm} ${this.startDate.gatey}, ${this.startDate.barsa} – ${em} ${this.endDate.gatey}, ${this.endDate.barsa}`
   }
 
   _dispatchChange(field) {

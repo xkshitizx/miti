@@ -116,10 +116,25 @@ Dark mode auto-detects `prefers-color-scheme: dark`. Set `data-miti-theme-auto="
 
 ```erb
 <%= form.nepali_date_range_field :start_date, :end_date %>
-<%= form.nepali_date_range_field :start_date, :end_date, theme: :nord, separator: "to" %>
+<!-- Single clickable input + two hidden inputs; drag-to-select or click-to-select range -->
 ```
 
-Renders two coordinated date pickers. Selecting a start date auto-advances focus to the end field.
+With defaults:
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date,
+      start_value: "2082-01-15", end_value: "2082-02-10" %>
+```
+
+Without a form builder:
+
+```erb
+<%= nepali_date_range_field :event, :start_date, :end_date %>
+```
+
+The display shows a friendly range like "Baisakh 15 – Jestha 3, 2082". Opens a single popover with drag-to-select. Fires `miti:range-selected` custom event on selection.
+
+Options: `theme`, `start_value`, `end_value`, `trigger_html`.
 
 ### Date select (3 dropdowns)
 

@@ -19,6 +19,9 @@ module Miti
         theme = normalize_theme(options.delete(:theme))
         value = default_val ? parse_bs_value(default_val) : bs_value_for(object, method)
 
+        name_prefix = object_name.presence ? "#{object_name}[" : nil
+        name_suffix = object_name.presence ? "]" : nil
+
         tag_options = {
           type: "text",
           autocomplete: "off",
@@ -26,7 +29,7 @@ module Miti
           readonly: true,
           class: "miti-date-field",
           value: value&.to_s,
-          name: "#{object_name}[#{method}]",
+          name: "#{name_prefix}#{method}#{name_suffix}",
           data: {
             action: DATE_PICKER_ACTIONS.html_safe
           }
@@ -40,26 +43,48 @@ module Miti
 
       def nepali_date_range_field(object_name, start_method, end_method, options = {})
         object = options.delete(:object) || (object_name.presence && instance_variable_get(:"@#{object_name}"))
-        separator = options.delete(:separator) || "to"
         theme = normalize_theme(options.delete(:theme))
         start_default = options.delete(:start_value)
         end_default = options.delete(:end_value)
+        trigger_html = options.delete(:trigger_html) || {}
 
         start_val = start_default ? parse_bs_value(start_default) : bs_value_for(object, start_method)
         end_val = end_default ? parse_bs_value(end_default) : bs_value_for(object, end_method)
 
-        input_opts = options.except(:start_html, :end_html)
-        start_html = options.delete(:start_html) || input_opts
-        end_html = options.delete(:end_html) || input_opts
+        name_prefix = object_name.presence ? "#{object_name}[" : nil
+        name_suffix = object_name.presence ? "]" : nil
 
-        start_input = build_range_input(object_name, start_method, start_val, start_html)
-        end_input = build_range_input(object_name, end_method, end_val, end_html)
+        start_hidden = tag.input(type: "hidden",
+          name: "#{name_prefix}#{start_method}#{name_suffix}",
+          value: start_val&.to_s,
+          id: "#{object_name}_#{start_method}".delete_prefix("_"),
+          data: { "miti-range-target": "start" })
+        end_hidden = tag.input(type: "hidden",
+          name: "#{name_prefix}#{end_method}#{name_suffix}",
+          value: end_val&.to_s,
+          id: "#{object_name}_#{end_method}".delete_prefix("_"),
+          data: { "miti-range-target": "end" })
 
-        start_field = tag.div(class: "miti-date-range__field miti-date-range__field--start") {
-          start_input + calendar_icon("miti-date-range", "start")
-        }
-        end_field = tag.div(class: "miti-date-range__field miti-date-range__field--end") {
-          end_input + calendar_icon("miti-date-range", "end")
+        display_value = [start_val&.to_s, end_val&.to_s].compact.reject(&:empty?)
+        display_text = display_value.any? ? display_value.join(" — ") : nil
+
+        display_opts = {
+          type: "text",
+          readonly: true,
+          placeholder: "Select date range",
+          class: "miti-date-range__display",
+          value: display_text,
+          data: {
+            action: "focus->miti-date-range#open blur->miti-date-range#blur keydown->miti-date-range#keydown"
+          }
+        }.merge(trigger_html) do |key, old_val, new_val|
+          key == :data ? old_val.deep_merge(new_val) : new_val
+        end
+
+        display_input = tag.input(**display_opts)
+
+        trigger = tag.div(class: "miti-date-range__trigger") {
+          display_input + calendar_icon("miti-date-range")
         }
 
         wrapper_data = {
@@ -70,7 +95,7 @@ module Miti
         wrapper_data[:"miti-theme"] = theme if theme
 
         tag.div(class: "miti-date-range-wrapper", data: wrapper_data) do
-          start_field + tag.span(separator, class: "miti-date-range__separator") + end_field
+          start_hidden + end_hidden + trigger
         end
       end
 

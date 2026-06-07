@@ -14,11 +14,7 @@ export default class extends Controller {
     this._picker = null
   }
 
-  openStart(event) {
+  open(event) {
     this._picker?.open(event, "start")
-  }
-
-  openEnd(event) {
-    this._picker?.open(event, "end")
   }
 }

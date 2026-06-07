@@ -77,7 +77,15 @@ Dark mode auto-detects `prefers-color-scheme: dark`. Set `data-miti-theme-auto="
 
 ```erb
 <%= form.nepali_date_range_field :start_date, :end_date %>
-<%= form.nepali_date_range_field :start_date, :end_date, theme: :nord, separator: "to" %>
+<!-- Renders a single clickable display input + two hidden inputs for form submission -->
+<!-- Selecting a range via drag or click opens a single popover -->
+```
+
+With a default value:
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date,
+      start_value: "2082-01-15", end_value: "2082-02-10" %>
 ```
 
 Without a form builder:
@@ -86,7 +94,27 @@ Without a form builder:
 <%= nepali_date_range_field :event, :start_date, :end_date %>
 ```
 
-Renders two coordinated date pickers. Selecting a start date auto-advances focus to the end field.
+The display shows a human-friendly range like "Baisakh 15 – Jestha 3, 2082". If both dates are in the same month it shortens to "Baisakh 15–28".
+
+**Interaction:** Click or focus the display input to open the popover. Drag across days to select a range, or click once for start then again for end. The range popover re-opens to the start date's month and allows adjusting either endpoint.
+
+A `miti:range-selected` custom event fires on the wrapper element when the range is confirmed:
+
+```javascript
+document.querySelector(".miti-date-range-wrapper")
+  .addEventListener("miti:range-selected", (e) => {
+    console.log(e.detail.startDate, e.detail.endDate)
+  })
+```
+
+Available options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `theme` | — | Theme name (`:dark`, `:nord`, etc.) |
+| `start_value` | — | Default BS start date string |
+| `end_value` | — | Default BS end date string |
+| `trigger_html` | `{}` | Extra HTML attributes merged onto the display input (use `data: {}` for Stimulus attrs) |
 
 ### Date select (3 dropdowns)
 
