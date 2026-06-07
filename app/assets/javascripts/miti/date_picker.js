@@ -20,7 +20,6 @@ export default class MitiDatePicker {
     this.currentYear = null
     this.currentMonth = null
     this.view = "day"
-    this.blurTimeout = null
     this._listeners = []
   }
 
@@ -32,9 +31,9 @@ export default class MitiDatePicker {
     this._attached = true
     MitiConverter.init()
     this._on(this.input, "focus", (e) => this.open(e))
-    this._on(this.input, "blur", (e) => this.blur(e))
     this._on(this.input, "keydown", (e) => this.keydown(e))
     if (this.icon) this._on(this.icon, "click", (e) => this.open(e))
+    this._on(document, "mousedown", (e) => this._outsideClick(e))
   }
 
   destroy() {
@@ -50,7 +49,6 @@ export default class MitiDatePicker {
   open(event) {
     if (!this.input) return
     if (event && event.type === "focus") {
-      this._clearBlurTimeout()
     }
 
     if (this.popover) {
@@ -73,19 +71,17 @@ export default class MitiDatePicker {
   }
 
   close() {
-    this._clearBlurTimeout()
     if (this.popover) {
       this.popover.style.display = "none"
     }
     this.element.classList.remove(OPEN_CLASS)
   }
 
-  blur(event) {
-    this.blurTimeout = setTimeout(() => {
-      if (!this._isClickInsidePopover(event)) {
-        this.close()
-      }
-    }, 200)
+  _outsideClick(e) {
+    if (!this.element.classList.contains(OPEN_CLASS)) return
+    if (this.element.contains(e.target)) return
+    if (this.popover && this.popover.contains(e.target)) return
+    this.close()
   }
 
   keydown(event) {
@@ -116,11 +112,7 @@ export default class MitiDatePicker {
     this.popover.className = "miti-date-picker-popover"
     if (this.theme) this.popover.dataset.mitiTheme = this.theme
 
-    this._on(this.popover, "mousedown", () => this._clearBlurTimeout())
-
     this._on(this.popover, "click", (e) => {
-      this._clearBlurTimeout()
-
       const nav = e.target.closest("[data-miti-nav]")
       if (nav) {
         e.preventDefault()
@@ -381,22 +373,6 @@ export default class MitiDatePicker {
       bubbles: true,
       detail: { barsa, mahina, gatey, formatted }
     }))
-  }
-
-  _clearBlurTimeout() {
-    if (this.blurTimeout) {
-      clearTimeout(this.blurTimeout)
-      this.blurTimeout = null
-    }
-  }
-
-  _isClickInsidePopover(event) {
-    if (!this.popover) return false
-    const relatedTarget = event.relatedTarget
-    if (relatedTarget && this.popover.contains(relatedTarget)) return true
-    const target = event.target
-    if (target && this.popover.contains(target)) return true
-    return false
   }
 
   _selectFocusedDay() {
