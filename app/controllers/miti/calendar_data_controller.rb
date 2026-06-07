@@ -1,5 +1,7 @@
 module Miti
   class CalendarDataController < ActionController::Base
+    skip_before_action :verify_authenticity_token, only: :show
+
     def show
       render json: calendar_data.merge(cssPath: helpers.asset_path("miti/calendar.css"))
     end

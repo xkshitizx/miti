@@ -29,7 +29,7 @@ const MitiConverter = {
       }
     }
 
-    this._loading = fetch(DATA_URL)
+    this._loading = fetch(DATA_URL, { method: "POST" })
       .then(r => r.json())
       .then(data => {
         this.data = data
@@ -168,6 +168,18 @@ const MitiConverter = {
     const m = String(mahina).padStart(2, "0")
     const d = String(gatey).padStart(2, "0")
     return `${barsa}-${m}-${d}`
+  },
+
+  _NEPALI_DIGITS: "०१२३४५६७८९",
+
+  toNepaliDigits(num) {
+    return String(num).replace(/\d/g, (d) => this._NEPALI_DIGITS[d])
+  },
+
+  formatBsNepali(barsa, mahina, gatey) {
+    const m = this.toNepaliDigits(String(mahina).padStart(2, "0"))
+    const d = this.toNepaliDigits(String(gatey).padStart(2, "0"))
+    return `${this.toNepaliDigits(barsa)}-${m}-${d}`
   }
 }
 

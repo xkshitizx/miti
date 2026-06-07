@@ -26,7 +26,7 @@ module Miti
 
     initializer "miti.routes" do |app|
       app.routes.prepend do
-        get "miti/calendar_data", to: "miti/calendar_data#show"
+        post "miti/calendar_data", to: "miti/calendar_data#show"
       end
     end
 
