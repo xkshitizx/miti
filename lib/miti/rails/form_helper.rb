@@ -3,7 +3,7 @@
 module Miti
   module Rails
     module FormHelper
-      DATE_PICKER_ACTIONS = "focus->miti-date-picker#open blur->miti-date-picker#blur keydown->miti-date-picker#keydown"
+      DATE_PICKER_ACTIONS = "focus->miti-date-picker#open keydown->miti-date-picker#keydown"
 
       def month_options
         @month_options ||= (1..12).map do |m|
