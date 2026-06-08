@@ -8,10 +8,14 @@ Run the installer generator:
 
     $ rails generate miti:install
 
-This will:
-- Pin `miti/converter` and `miti/date_picker_controller` in your `importmap.rb`
-- Register the `miti-date-picker` Stimulus controller
-- Add `include_miti_date_picker_data` and stylesheet link to your layout
+The generator auto-detects your JavaScript setup:
+
+- **Importmap** (default Rails 7+): pins `miti/converter` and `miti/date_picker_controller` in `config/importmap.rb`
+- **esbuild / webpack / other bundler** (no `config/importmap.rb`): copies the JS files into `app/javascript/miti/` so your bundler can resolve them
+
+To force file copy even with importmap (e.g., to customize the JS):
+
+    $ rails generate miti:install --copy-javascript
 
 To customize the calendar styles, copy them into your app:
 
@@ -24,27 +28,98 @@ To undo everything:
 ### Date picker field
 
 ```erb
-<%= form.nepali_date_field :happened_on_bs %>
+<%= form.nepali_date_field :happened_on %>
 <!-- Renders a readonly text input with a calendar icon that opens a popover -->
+<!-- Submits as event[happened_on] — the custom type auto-converts BS string to AD Date -->
 ```
 
 With a default value:
 
 ```erb
-<%= form.nepali_date_field :happened_on_bs, value: "2082-01-15" %>
-<%= form.nepali_date_field :happened_on_bs, value: @event.happened_on_bs %>
+<%= form.nepali_date_field :happened_on, value: "2082-01-15" %>
+<%= form.nepali_date_field :happened_on, value: @event.happened_on_bs %>
 ```
 
 Without a form builder:
 
 ```erb
-<%= nepali_date_field :event, :happened_on_bs %>
+<%= nepali_date_field :event, :happened_on %>
 ```
+
+#### Themes
+
+```erb
+<%= form.nepali_date_field :happened_on, theme: :dark %>
+<%= form.nepali_date_field :happened_on, theme: :tokyo_night %>
+<!-- Use underscores in Ruby symbols (converted to hyphens in CSS) -->
+```
+
+Available themes: `light` (default), `dark`, `indigo`, `midnight`, `tokyo_night`, `nord`.
+
+Use `data-miti-theme` on any ancestor to style a group of pickers.
+
+```erb
+<div data-miti-theme="dark">
+  <%= form.nepali_date_field :start_date %>
+  <%= form.nepali_date_field :end_date %>
+</div>
+```
+
+Dark mode auto-detects `prefers-color-scheme: dark`. Set `data-miti-theme-auto="false"` on any ancestor to disable:
+
+```erb
+<div data-miti-theme-auto="false">
+  <%= form.nepali_date_field :happened_on %>
+</div>
+```
+
+### Date range picker
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date %>
+<!-- Renders a single clickable display input + two hidden inputs for form submission -->
+<!-- Selecting a range via drag or click opens a single popover -->
+```
+
+With a default value:
+
+```erb
+<%= form.nepali_date_range_field :start_date, :end_date,
+      start_value: "2082-01-15", end_value: "2082-02-10" %>
+```
+
+Without a form builder:
+
+```erb
+<%= nepali_date_range_field :event, :start_date, :end_date %>
+```
+
+The display shows a human-friendly range like "Baisakh 15 – Jestha 3, 2082". If both dates are in the same month it shortens to "Baisakh 15–28".
+
+**Interaction:** Click or focus the display input to open the popover. Drag across days to select a range, or click once for start then again for end. The range popover re-opens to the start date's month and allows adjusting either endpoint.
+
+A `miti:range-selected` custom event fires on the wrapper element when the range is confirmed:
+
+```javascript
+document.querySelector(".miti-date-range-wrapper")
+  .addEventListener("miti:range-selected", (e) => {
+    console.log(e.detail.startDate, e.detail.endDate)
+  })
+```
+
+Available options:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `theme` | — | Theme name (`:dark`, `:nord`, etc.) |
+| `start_value` | — | Default BS start date string |
+| `end_value` | — | Default BS end date string |
+| `trigger_html` | `{}` | Extra HTML attributes merged onto the display input (use `data: {}` for Stimulus attrs) |
 
 ### Date select (3 dropdowns)
 
 ```erb
-<%= form.nepali_date_select :happened_on_bs %>
+<%= form.nepali_date_select :happened_on %>
 ```
 
 ### Model concern
@@ -60,6 +135,27 @@ This defines:
 - `event.happened_on_bs` — returns the date as a `Miti::NepaliDate`
 - `event.happened_on_bs = "2082-01-15"` — sets the AD column from a BS string
 - `event.happened_on_bs_human` — returns a readable description (respects `I18n.locale`)
+- `event.happened_on = "2082-01-15"` — auto-converts BS string to AD via `:miti_nepali_date` type
+
+#### Optional BS column storage
+
+```ruby
+class Event < ApplicationRecord
+  include Miti::Rails::ModelConcern
+  has_nepali_date :happened_on, store_bs: true
+end
+```
+
+Writes the BS string to the `happened_on_bs` column on assignment. Generate the migration:
+
+```
+$ rails generate miti:store_bs Event happened_on
+```
+
+With `store_bs: true`:
+- `event.happened_on_bs` reads from the DB column directly (zero conversion cost)
+- Falls back to converting from AD if the column is empty
+- The BS string is written to the column immediately by the setter
 
 ### Calendar
 

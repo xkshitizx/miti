@@ -21,6 +21,35 @@ RSpec.describe Miti::NepaliDate do
     end
   end
 
+  describe "#format" do
+    it "formats date using custom tokens" do
+      expect(nepali_date.format("%<gatey>g %<barsa>b %<mahina>m")).to eq("26 2079 06")
+    end
+
+    it "keeps literal text intact" do
+      expect(nepali_date.format("BS %<gatey>g/%<mahina>m/%<barsa>b")).to eq("BS 26/06/2079")
+    end
+
+    it "formats month and weekday words in english" do
+      expect(nepali_date.format("%<month>B %<gatey>g, %<barsa>Y %<weekday>A")).to eq("Asoj 26, 2079 Wednesday")
+    end
+
+    it "formats month and weekday words in nepali" do
+      expect(nepali_date.format("%<month>B %<gatey>g, %<barsa>Y %<weekday>A",
+                                nepali: true)).to eq("आश्विन 26, 2079 बुधबार")
+    end
+
+    it "formats month name in english and nepali" do
+      expect(nepali_date.format("%<month>B", nepali: false)).to eq("Asoj")
+      expect(nepali_date.format("%<month>B", nepali: true)).to eq("आश्विन")
+    end
+
+    it "formats weekday name in english and nepali" do
+      expect(nepali_date.format("%<weekday>A", nepali: false)).to eq("Wednesday")
+      expect(nepali_date.format("%<weekday>A", nepali: true)).to eq("बुधबार")
+    end
+  end
+
   describe "#descriptive" do
     it "returns english description by default" do
       expect(nepali_date.descriptive).to match(/Asoj 26, 2079 \w+/)

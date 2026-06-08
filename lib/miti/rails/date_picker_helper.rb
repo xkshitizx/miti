@@ -5,6 +5,13 @@ require "json"
 module Miti
   module Rails
     module DatePickerHelper
+      def miti_assets
+        safe_join [
+          include_miti_date_picker_data,
+          stylesheet_link_tag("miti/calendar")
+        ], "\n"
+      end
+
       def include_miti_date_picker_data
         tag.script(
           miti_calendar_data.to_json.html_safe,

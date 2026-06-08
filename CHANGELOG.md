@@ -11,13 +11,14 @@
 - Add `has_nepali_date` model concern for AD↔BS auto-conversion on ActiveRecord attributes
 - Add `include_miti_date_picker_data` helper for injecting calendar data into layouts
 - Add `Miti::Rails::Calendar::DayPresenter` for calendar/agenda view blocks
-- Add `rails generate miti:install` generator (importmap, Stimulus, stylesheets) with `--copy-styles`
+- Add `rails generate miti:install` generator with auto-detection of importmap vs esbuild; `--copy-javascript` and `--copy-styles` flags
 - Add Stimulus date picker controller with day/month/year grid views and adaptive positioning
 - Add `converter.js` — BS↔AD conversion engine as ES module
 - Add calendar.css with theming via CSS custom properties (`--miti-*`)
 - Add `value:` parameter support to `nepali_date_field` for default values
 - Move controller from input to wrapper for calendar icon button support
 - Add hover effects, smaller input sizing, and calendar icon to date field
+- Calendar title now shows English month abbreviation range in brackets, e.g. `Baisakh (Apr-May) 2083`, styled non-bold/italic
 
 ### Breaking changes
 - **Ruby minimum raised to 3.1** (from 3.0)
@@ -32,9 +33,6 @@
 ### Bug fixes
 - Fix `turbo_frame_tag` content not rendering — use block form instead of positional argument (turbo-rails uses `*ids` splat)
 - Fix rubocop offenses (ABC size, unused kw args, module length)
-
-### Enhancements
-- Calendar title now shows English month abbreviation range in brackets, e.g. `Baisakh (Apr-May) 2083`, styled non-bold/italic
 
 ### Dev & CI
 - Bump development Ruby to 4.0.3

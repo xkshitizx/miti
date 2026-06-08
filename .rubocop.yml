@@ -54,6 +54,7 @@ Metrics/ClassLength:
   Max: 120
   Exclude:
     - "lib/miti/data/date_data.rb"
+    - "lib/generators/miti/install/install_generator.rb"
 
 Metrics/AbcSize:
   Max: 35

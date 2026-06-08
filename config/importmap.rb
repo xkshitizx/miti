@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+pin "miti/converter", to: "miti/converter.js"
+pin "miti/date_picker", to: "miti/date_picker.js"
+pin "miti/date_picker_controller", to: "miti/date_picker_controller.js"
+pin "miti/date_range_picker", to: "miti/date_range_picker.js"
+pin "miti/date_range_picker_controller", to: "miti/date_range_picker_controller.js"
+pin "miti", to: "miti/index.js"

@@ -3,7 +3,6 @@
 require_relative "../../spec_helper"
 require "active_model"
 require "miti/rails/model_concern"
-
 RSpec.describe Miti::Rails::ModelConcern do
   before do
     stub_const("TestModel", Class.new do
@@ -107,6 +106,79 @@ RSpec.describe Miti::Rails::ModelConcern do
     end
   end
 
+  describe "store_bs: true" do
+    before do
+      stub_const("StoreBsModel", Class.new do
+        include ActiveModel::Model
+        include Miti::Rails::ModelConcern
+
+        attr_accessor :happened_on
+        attr_accessor :happened_on_bs
+
+        has_nepali_date :happened_on, store_bs: true
+      end)
+    end
+
+    let(:model) { StoreBsModel.new }
+
+    describe "._bs getter" do
+      context "when the BS column is populated" do
+        before do
+          model.happened_on = Date.new(2026, 5, 13)
+        end
+
+        it "returns the BS date from the column" do
+          instance_var = :@happened_on_bs
+          model.instance_variable_set(instance_var, "2083-01-30")
+          bs = model.happened_on_bs
+          expect(bs).to be_a(Miti::NepaliDate)
+          expect(bs.barsa).to eq(2083)
+          expect(bs.mahina).to eq(1)
+          expect(bs.gatey).to eq(30)
+        end
+      end
+
+      context "when the BS column is empty" do
+        before do
+          model.happened_on = Date.new(2026, 5, 13)
+        end
+
+        it "falls back to converting from AD" do
+          bs = model.happened_on_bs
+          expect(bs).to be_a(Miti::NepaliDate)
+          expect(bs.barsa).to eq(2083)
+          expect(bs.mahina).to eq(1)
+          expect(bs.gatey).to eq(30)
+        end
+      end
+    end
+
+    describe "before_validation sync" do
+      before do
+        stub_const("StoreBsSyncModel", Class.new do
+          include ActiveModel::Model
+          include ActiveModel::Validations::Callbacks
+          include Miti::Rails::ModelConcern
+
+          attr_accessor :happened_on
+          attr_accessor :happened_on_bs
+
+          has_nepali_date :happened_on, store_bs: true
+        end)
+      end
+
+      let(:model) { StoreBsSyncModel.new }
+
+      context "when date is set" do
+        it "syncs the BS column from AD after validation" do
+          model.happened_on = Date.new(2026, 5, 13)
+          model.valid?
+          expect(model.instance_variable_get(:@happened_on_bs)).to eq("2083-01-30")
+        end
+      end
+    end
+  end
+
   describe "multiple attributes" do
     before do
       stub_const("MultiAttrModel", Class.new do
@@ -126,6 +198,49 @@ RSpec.describe Miti::Rails::ModelConcern do
 
       expect(model.start_date_bs).to be_a(Miti::NepaliDate)
       expect(model.end_date_bs).to be_a(Miti::NepaliDate)
+    end
+  end
+
+  describe "before_validation sync" do
+    before do
+      stub_const("SyncModel", Class.new do
+        include ActiveModel::Model
+        include ActiveModel::Validations::Callbacks
+        include Miti::Rails::ModelConcern
+
+        attr_accessor :date
+
+        has_nepali_date :date
+      end)
+    end
+
+    let(:model) { SyncModel.new }
+
+    context "when date_bs is set but date is nil" do
+      it "syncs BS to AD before validation" do
+        model.date_bs = "2083-01-01"
+        model.date = nil
+        model.valid?
+        expect(model.date).to be_a(Date)
+        expect(model.date.year).to eq(2026)
+      end
+    end
+
+    context "when both are already synced" do
+      it "does nothing" do
+        model.date_bs = "2083-01-01"
+        orig_date = model.date
+        model.valid?
+        expect(model.date).to eq(orig_date)
+      end
+    end
+
+    context "raw ivar cleanup" do
+      it "clears the raw ivar after validation" do
+        model.date_bs = "2083-01-01"
+        model.valid?
+        expect(model.instance_variable_get(:@_miti_raw_bs_date)).to be_nil
+      end
     end
   end
 end

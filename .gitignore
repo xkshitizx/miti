@@ -56,4 +56,7 @@ Gemfile.lock
 # .rubocop-https?--*
 # rspec failure tracking
 .rspec_status
+
+# macOS
+.DS_Store
 /exe/benchmark.rb

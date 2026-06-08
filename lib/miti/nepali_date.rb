@@ -64,6 +64,14 @@ module Miti
     end
 
     ##
+    # Formats Nepali date with custom tokens.
+    #
+    # @return [String]
+    def format(format_string, nepali: false)
+      Miti::NepaliDate::Formatter.new(self).format(format_string, nepali: nepali)
+    end
+
+    ##
     # Descriptive output for current date
     # When nepali flag is true, month is returned in nepali font and week day in Nepali
     #

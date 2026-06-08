@@ -19,20 +19,11 @@ RSpec.describe Miti::Rails::FormHelper do
 
     it "renders a text input" do
       expect(html).to include('type="text"')
+      expect(html).to include('name="event[happened_on]"')
     end
 
     it "includes the Stimulus controller" do
       expect(html).to include('data-controller="miti-date-picker"')
-    end
-
-    it "includes the right name attribute" do
-      expect(html).to include('name="event[happened_on]"')
-    end
-
-    it "targets *_bs when the object exposes BS accessors" do
-      object = double(happened_on_bs: nil)
-      html = view.nepali_date_field(object_name, method_name, object: object)
-      expect(html).to include('name="event[happened_on_bs]"')
     end
 
     it "has autocomplete off" do
@@ -48,7 +39,7 @@ RSpec.describe Miti::Rails::FormHelper do
     end
 
     context "with a date attribute on the object" do
-      it "pre-fills the value" do
+      it "pre-fills the BS value" do
         object = double(happened_on: Date.new(2026, 5, 13))
         html = view.nepali_date_field(object_name, method_name, object: object)
         expect(html).to include('value="2083-01-30"')
@@ -56,7 +47,7 @@ RSpec.describe Miti::Rails::FormHelper do
     end
 
     context "with explicit value option" do
-      it "uses the provided value" do
+      it "uses the provided BS value" do
         html = view.nepali_date_field(object_name, method_name, value: "2080-05-15")
         expect(html).to include('value="2080-05-15"')
       end

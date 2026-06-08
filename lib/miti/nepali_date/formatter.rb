@@ -17,14 +17,6 @@ module Miti
         @gatey = nepali_date.gatey
       end
 
-      def self.to_s
-        new(nepali_date).to_s
-      end
-
-      def self.descriptive
-        new(nepali_date).descriptive
-      end
-
       ##
       # Returns Nepali Date in string format(yyyy/mm/dd).
       #
@@ -36,6 +28,26 @@ module Miti
 
         [barsa, mahina, gatey].reduce("") do |final_date, date_element|
           "#{final_date}#{separator unless final_date.empty?}#{0 if date_element < 10}#{date_element}"
+        end
+      end
+
+      ##
+      # Formats Nepali date with custom tokens.
+      #
+      # Supported tokens:
+      #   %<gatey>g => gatey
+      #   %<mahina>m => mahina
+      #   %<barsa>b => barsa
+      #   %<barsa>Y => barsa
+      #   %<month>B => month name
+      #   %<weekday>A => weekday name
+      #
+      # @return [String]
+      def format(format_string, nepali: false)
+        format_string.gsub(/%(?:<(?<token>gatey|mahina|barsa|month|weekday)>(?<type>[gmbBYA])|(?<legacy>[gmbYAB]))/) do
+          token = Regexp.last_match[:token] || Regexp.last_match[:legacy]
+
+          format_token(token, nepali: nepali)
         end
       end
 
@@ -66,6 +78,31 @@ module Miti
         week_day = week_days_in_nepali[nepali_date.bar]
 
         "#{month} #{gatey}, #{barsa} #{week_day}"
+      end
+
+      def month_name(nepali: false)
+        nepali ? months_in_nepali[mahina - 1] : months_in_english[mahina - 1]
+      end
+
+      def week_day_name(nepali: false)
+        nepali ? week_days_in_nepali[nepali_date.bar] : nepali_date.tarik.strftime("%A")
+      end
+
+      def format_token(token, nepali: false)
+        case token
+        when "g", "gatey"
+          gatey.to_s.rjust(2, "0")
+        when "m", "mahina"
+          mahina.to_s.rjust(2, "0")
+        when "b", "barsa", "Y"
+          barsa.to_s
+        when "B", "month"
+          month_name(nepali: nepali)
+        when "A", "weekday"
+          week_day_name(nepali: nepali)
+        else
+          token
+        end
       end
 
       def months_in_english

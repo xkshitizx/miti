@@ -20,7 +20,9 @@ Gem::Specification.new do |spec|
                    "miti.gemspec", ".github/*.md",
                    "Gemfile", "Rakefile",
                    "lib/generators/**/*",
-                   "app/assets/**/*"]
+                   "config/importmap.rb",
+                   "app/assets/**/*",
+                   "app/controllers/**/*.rb"]
   spec.metadata = {
     # "allowed_push_host" = "TODO: Set to your gem server 'https://example.com'",
     "bug_tracker_uri" => "https://github.com/xkshitizx/miti/issues",
