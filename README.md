@@ -1,3 +1,5 @@
+
+
 # Miti
 [![Gem Version](https://badge.fury.io/rb/miti.svg)](https://badge.fury.io/rb/miti)
 [![CI](https://github.com/xkshitizx/miti/actions/workflows/main.yml/badge.svg)](https://github.com/xkshitizx/miti/actions/workflows/main.yml)
@@ -69,6 +71,8 @@ Miti.to_ad("2082-01-15")
 To copy styles into your app for customization:
 
     $ rails generate miti:install --copy-styles
+
+To copy JavaScript into your app for bundler setup: `rails generate miti:install --copy-javascript`
 
 To undo: `rails destroy miti:install`
 
