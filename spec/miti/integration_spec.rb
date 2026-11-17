@@ -53,6 +53,20 @@ RSpec.describe Miti do
   end
 
   describe ".to_bs and .to_ad roundtrip" do
+    {
+      "2026-10-18" => "2083-07-01",
+      "2026-11-16" => "2083-07-30",
+      "2026-11-17" => "2083-08-01",
+      "2026-12-16" => "2083-09-01",
+      "2027-01-15" => "2083-10-01",
+      "2027-02-13" => "2083-11-01"
+    }.each do |ad_date, bs_date|
+      it "converts between #{ad_date} AD and #{bs_date} BS" do
+        expect(described_class.to_bs(ad_date).to_s).to eq(bs_date)
+        expect(described_class.to_ad(bs_date)).to eq(Date.iso8601(ad_date))
+      end
+    end
+
     it "produces consistent roundtrip results" do
       test_dates = %w[2022-01-01 2022-06-15 2023-12-31 2024-04-13 2025-09-01]
       test_dates.each do |ad_date|
