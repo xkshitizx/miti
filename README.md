@@ -1,3 +1,5 @@
+
+
 # Miti
 [![Gem Version](https://badge.fury.io/rb/miti.svg)](https://badge.fury.io/rb/miti)
 [![CI](https://github.com/xkshitizx/miti/actions/workflows/main.yml/badge.svg)](https://github.com/xkshitizx/miti/actions/workflows/main.yml)
@@ -87,6 +89,8 @@ Options:
 
     $ rails generate miti:install --copy-styles      # copy calendar.css into your app for customization
     $ rails generate miti:install --copy-javascript  # force-copy the JS files into app/javascript/miti/
+
+To copy JavaScript into your app for bundler setup: `rails generate miti:install --copy-javascript`
 
 To undo: `rails destroy miti:install`
 
